@@ -62,7 +62,7 @@ select{width:100%;padding:10px;border-radius:10px;border:1px solid var(--bd);bac
 <div class="hd"><h1>📚 Scripts backoffice</h1><span style="display:flex;gap:8px"><button class="gear" id="edit" title="Modo edição">🔑</button><button class="gear" id="add" title="Novo script">➕</button><button class="gear" id="gear" title="Configurações">⚙️</button></span></div>
 <div class="sync" id="sync"></div>
 <div class="pnl" id="pnl"><div class="pbox"><div class="ph"><b>⚙️ Configurações</b><button class="b o" id="pcl">✕</button></div><div class="ps"><div class="pt">✍️ Assinatura</div><div class="lb">Meu nome (assinatura)</div><input type="text" id="cnome" placeholder="Seu nome"><div class="lb">Abertura</div><textarea id="cab"></textarea><div class="lb">Fechamento ({nome} vira o seu nome)</div><textarea id="cfe"></textarea><div class="lb">Abertura sem pedido de desculpas</div><textarea id="cab2"></textarea><div class="lb">Pedido de avaliação</div><textarea id="cav"></textarea><div class="bt"><button class="b o" id="crst">Restaurar padrão</button></div></div><div class="ps"><div class="pt">🎨 Aparência</div><div class="lb">Tamanho da letra</div><div class="bt" style="align-items:center"><button class="b o" id="zm">A−</button><b id="zv"></b><button class="b o" id="zp">A+</button></div><div class="lb">Tema</div><select id="uth"><option value="">Automático</option><option value="light">Claro</option><option value="dark">Escuro</option></select><div class="lb">Cor e emoji de cada setor</div><div id="usets"></div><div class="bt"><button class="b o" id="urst">Restaurar aparência padrão</button></div></div><p class="cnt">Assinatura, aparência, anotações e a aba Meus ficam salvas só neste navegador. Os scripts das abas Equipe e Oficiais são compartilhados: o que alguém altera aparece para todos.</p></div></div>
-<div class="pnl" id="pnn"><div class="pbox"><div class="ph"><b>➕ Novo script</b><button class="b o" id="ncl">✕</button></div><div class="lb">Salvar em</div><select id="nonde"></select><div class="lb">Setor</div><select id="nset"></select><div class="lb">Título</div><input type="text" id="ntit"><div class="lb">Resposta</div><textarea id="ntx" style="min-height:170px"></textarea><div class="lb">Observações (opcional, uma por linha)</div><textarea id="nob"></textarea><div class="cnt" id="nerr" style="color:var(--S)"></div><div class="bt"><button class="b" id="nsv" style="background:var(--P)">Salvar</button></div></div></div>
+<div class="pnl" id="pnn"><div class="pbox"><div class="ph"><b>➕ Novo script</b><button class="b o" id="ncl">✕</button></div><div class="lb">Salvar em</div><select id="nonde"></select><div class="lb">Setor</div><select id="nset"></select><div class="lb">Título</div><input type="text" id="ntit"><div class="lb">Ocorrência (o que aconteceu com o aluno)</div><textarea id="nsit" placeholder="Ex.: aluno não consegue agendar a SUB porque..."></textarea><div class="lb">Resposta</div><textarea id="ntx" style="min-height:170px"></textarea><div class="lb">Observações (opcional, uma por linha)</div><textarea id="nob"></textarea><div class="cnt" id="nerr" style="color:var(--S)"></div><div class="bt"><button class="b" id="nsv" style="background:var(--P)">Salvar</button></div></div></div>
 <div class="pnl" id="plg"><div class="pbox"><div class="ph"><b>🔑 Modo edição</b><button class="b o" id="lcl">✕</button></div><div class="cnt" id="lgst"></div><button class="b o" id="lgout" style="display:none">Sair do modo edição</button>
 <div id="lgform"><div class="lb">Como entrar (uma vez por navegador)</div><ol class="lgi"><li>Peça para ser adicionado(a) como colaborador(a) no repositório do GitHub.</li><li>No GitHub, vá em Settings &gt; Developer settings &gt; Personal access tokens &gt; <b>Tokens (classic)</b> &gt; Generate new token (classic).</li><li>Dê um nome (ex.: Scripts backoffice), escolha a validade e marque só a opção <b>public_repo</b>. Clique em Generate token.</li><li>Copie o token e cole aqui embaixo.</li></ol><div class="lb">Token do GitHub</div><input type="text" id="lgtok" autocomplete="off" placeholder="ghp_..."><div class="cnt" id="lgerr" style="color:var(--S)"></div><div class="bt"><button class="b" id="lgok" style="background:var(--P)">Entrar</button></div><p class="cnt">O token fica guardado só neste navegador. Não use o modo edição em computador compartilhado.</p></div></div></div>
 <div class="tabs" id="tabs"></div>
@@ -77,6 +77,8 @@ select{width:100%;padding:10px;border-radius:10px;border:1px solid var(--bd);bac
 <script>
 /* ====== CONFIGURAÇÃO ====== */
 var REPO="Joabvitru/coloque-scripts-backoffice",BRANCH="main",ARQ="scripts.json";
+/* usuários do GitHub que aprovam scripts e editam os Oficiais */
+var APROVADORES=["joabvitru"];
 /* ========================== */
 var SET={P:["Pedagógico","🟦","var(--P)"],F:["Financeiro","🟩","var(--F)"],S:["Secretaria","🟥","var(--S)"],C:["Coordenação","🟨","var(--C)"],L:["Logística","🟧","var(--L)"],G:["Geral","🟪","var(--G)"],X:["Financeiro 2.0","💚","var(--X)"]};
 var DATA={ABERT:"",FECH:"",D:[],PL:[]},carregado=false;
@@ -100,6 +102,8 @@ function full2(t){return ((cfg.ab2!=null?cfg.ab2:AB2)+"\n\n"+t+"\n\n"+(cfg.av!=n
 function dt(ms){if(!ms)return "";var d=new Date(ms);function z(n){return(n<10?"0":"")+n}return z(d.getDate())+"/"+z(d.getMonth()+1)+"/"+d.getFullYear()+" "+z(d.getHours())+":"+z(d.getMinutes())}
 function keys(){return Object.keys(SET).filter(function(k){return aba==="pl"||(k!=="G"&&k!=="X")})}
 function podeEditar(){return !!(gh&&gh.token)}
+function isAprov(){return podeEditar()&&APROVADORES.indexOf(String(gh.login||"").toLowerCase())>-1}
+function pode(d){return d.mine||(podeEditar()&&(d.tab!=="pl"||isAprov()))}
 
 function lista(tab){return tab==="eq"?DATA.D:DATA.PL}
 function itens(tab,exc){return lista(tab).filter(function(d){return !!d.del===!!exc}).map(function(d){var c={};for(var x in d)c[x]=d[x];c.tab=tab;c.s=SET[c.s]?c.s:"P";c.t=S(c.t);c.sit=S(c.sit);c.tx=S(c.tx);c.ob=A(c.ob);return c})}
@@ -134,8 +138,30 @@ var h=Array.isArray(x.hist)?x.hist:[];h.unshift(snapDe(x));x.hist=h.slice(0,6);
 x.s=vals.s;x.t=vals.t;x.sit=vals.sit;x.tx=vals.tx;x.ob=vals.ob;x.upd={by:gh.login,at:Date.now()}}
 function aviso(b,txt){var a=el("div","warn",txt);b.insertBefore(a,b.firstChild);setTimeout(function(){a.remove()},7000)}
 
+function proxN(L,s){var n=1;L.forEach(function(m){if(m.s===s&&!m.p&&m.n>=n)n=m.n+1});return n}
+function novoK(tab){return tab+"-n-"+Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
+/* botões de fluxo: Meus -> Equipe -> Oficiais */
+function extras(d,b,bt){
+if(d.mine){
+ if(podeEditar()){var bm=el("button","b o","📤 Enviar para a Equipe");bm.onclick=function(){if(!bm.dataset.c){bm.dataset.c=1;bm.textContent="Confirmar? Todos vão ver e o supervisor analisa";return}
+  bm.disabled=true;bm.textContent="Enviando...";salvar("Novo script (da aba Meus): "+d.t,function(o){o.D.push({k:novoK("eq"),s:d.s,p:"",n:proxN(o.D,d.s),t:d.t,sit:d.sit||"",tx:d.tx,ob:d.ob||[],novo:true,upd:{by:gh.login,at:Date.now()},hist:[]})})
+  .then(function(){mine=mine.filter(function(x){return x.id!==d.id});lsS("mine-scripts",mine);aba="eq";tabs();chips();render()}).catch(function(e){bm.disabled=false;bm.textContent="📤 Enviar para a Equipe";aviso(b,msgErro(e))})};bt.appendChild(bm)}
+ else{var bs=el("button","b o","📤 Copiar sugestão para o supervisor");bs.onclick=function(){copiar("Sugestão de script\nSetor: "+SET[d.s][0]+"\nTítulo: "+d.t+(d.sit?"\nOcorrência: "+d.sit:"")+"\n\nResposta:\n"+d.tx+(d.ob&&d.ob.length?"\n\nObservações:\n"+d.ob.join("\n"):""),bs)};bt.appendChild(bs)}
+ return}
+if(d.tab==="eq"&&isAprov()){var bp=el("button","b o","⬆️ Enviar para Oficiais");bp.onclick=function(){if(b.querySelector(".prom"))return;
+ var f=el("div","warn prom");f.appendChild(el("div","","Este script vai sair da aba Equipe e virar um script oficial. Em qual setor ele fica nos Oficiais?"));
+ var ss=el("select");Object.keys(SET).forEach(function(k){var o=el("option","",SET[k][0]);o.value=k;ss.appendChild(o)});ss.value=d.s;f.appendChild(ss);
+ var r=el("div","bt");var ok=el("button","b","Confirmar");ok.style.background="var(--F)";var no=el("button","b o","Cancelar");r.appendChild(ok);r.appendChild(no);f.appendChild(r);bt.parentNode.insertBefore(f,bt.nextSibling);
+ no.onclick=function(){f.remove()};
+ ok.onclick=function(){ok.disabled=true;ok.textContent="Enviando...";var s2=ss.value,code0=code(d);
+  salvar("Promover "+code0+" para Oficiais: "+d.t,function(o){var i=-1;o.D.forEach(function(x,j){if(x.k===d.k)i=j});if(i<0)return false;var x=o.D.splice(i,1)[0];
+   var h=Array.isArray(x.hist)?x.hist:[];var ob=(x.ob||[]).slice();ob.push("Promovido da aba Equipe ("+code0+")"+(x.upd&&x.upd.by?", criado por "+x.upd.by:"")+".");
+   o.PL.push({k:novoK("pl"),s:s2,p:"",n:proxN(o.PL,s2),t:x.t,sit:x.sit||"",tx:x.tx,ob:ob,cp:x.cp,novo:true,upd:{by:gh.login,at:Date.now()},hist:h})})
+  .then(function(r){if(r&&r.abortado){f.textContent="Este script não está mais na Equipe (pode ter sido movido ou excluído).";return}aba="pl";setor="";tabs();chips();render()})
+  .catch(function(e){ok.disabled=false;ok.textContent="Confirmar";aviso(b,msgErro(e))})}};bt.appendChild(bp)}}
+
 /* ---------- corpo do card ---------- */
-function corpo(d,b){var key=nk(d);b.innerHTML="";var pe=d.mine||podeEditar();
+function corpo(d,b){var key=nk(d);b.innerHTML="";var pe=pode(d);
 if(d.sit){b.appendChild(el("div","lb","Situação"));b.appendChild(el("div","",d.sit))}
 if(d.upd&&d.upd.at)b.appendChild(el("div","edby",(d.novo?"Criado":"Editado")+(d.upd.by?" por "+S(d.upd.by):"")+" em "+dt(d.upd.at)));
 b.appendChild(el("div","lb","Resposta"));
@@ -151,7 +177,7 @@ b4.disabled=true;b4.textContent="Salvando...";salvar("Restaurar original "+code(
 var b5=el("button","b o","🗑️ Excluir");b5.onclick=function(){if(!b5.dataset.c){b5.dataset.c=1;b5.textContent=d.mine?"Confirmar exclusão?":"Confirmar? Some para toda a equipe";return}
 if(d.mine){mine=mine.filter(function(x){return x.id!==d.id});delete notas[key];lsS("mine-scripts",mine);lsS(KEY,notas);tabs();render();return}
 b5.disabled=true;b5.textContent="Excluindo...";salvar("Excluir "+code(d)+": "+d.t,function(o){var x=acha(o,d.tab,d.k);if(!x)return false;x.del=true;x.upd={by:gh.login,at:Date.now()}}).then(function(){tabs();render()}).catch(function(e){b5.disabled=false;b5.textContent="🗑️ Excluir";aviso(b,msgErro(e))})};bt.appendChild(b5)}
-b.appendChild(bt);
+extras(d,b,bt);b.appendChild(bt);
 var hs=(!d.mine&&Array.isArray(d.hist))?d.hist.filter(function(h){return h&&typeof h.tx==="string"}):[];
 if(hs.length){var hv=el("details","hist");hv.appendChild(el("summary","","🕘 Versões anteriores ("+hs.length+")"));
 hs.forEach(function(h){var it=el("div","hit");it.appendChild(el("div","edby",h.at?"Versão"+(h.by?" de "+S(h.by):"")+" em "+dt(h.at):"Texto original"));
@@ -202,7 +228,7 @@ de.addEventListener("toggle",function(){if(de.open){abertos[key]=1;if(!b.hasChil
 if((q&&its.length===1)||abertos[key])de.open=true;L.appendChild(de)})});
 document.getElementById("cnt").textContent=n+" script"+(n===1?"":"s")+" encontrado"+(n===1?"":"s");
 if(!n)L.appendChild(el("div","em",aba==="me"&&!q?"Você ainda não adicionou scripts. Toque no ➕ lá em cima.":"Nada encontrado. Tente outra palavra."));
-if(aba!=="me"&&podeEditar()){var ex=itens(aba,true);if(ex.length){var dx=el("details","cfg exc");dx.appendChild(el("summary","","🗑️ Scripts excluídos ("+ex.length+")"));
+if(aba!=="me"&&podeEditar()&&(aba!=="pl"||isAprov())){var ex=itens(aba,true);if(ex.length){var dx=el("details","cfg exc");dx.appendChild(el("summary","","🗑️ Scripts excluídos ("+ex.length+")"));
 ex.forEach(function(d){var r=el("div","urow");r.appendChild(el("span","",code(d)+" · "+d.t));var rb=el("button","b o","Restaurar");rb.onclick=function(){rb.disabled=true;rb.textContent="...";salvar("Restaurar "+code(d)+": "+d.t,function(o){var x=acha(o,d.tab,d.k);if(!x)return false;delete x.del;x.upd={by:gh.login,at:Date.now()}}).then(function(){tabs();render()}).catch(function(e){rb.disabled=false;rb.textContent="Restaurar";aviso(dx,msgErro(e))})};r.appendChild(rb);dx.appendChild(r)});L.appendChild(dx)}}}
 document.getElementById("q").oninput=function(e){busca=e.target.value;render()};
 
@@ -243,19 +269,20 @@ gh=tmp;lsS("gh-login",gh);document.getElementById("lgtok").value="";plg.classLis
 .catch(function(e){gh=old;er.textContent=e.escopo?"Esse token foi criado sem a opção public_repo marcada. Gere um novo token (classic) marcando public_repo e cole aqui.":e.status===401?"Token inválido ou expirado.":e.status===403||e.status===404?"Esse usuário do GitHub não tem permissão de escrita no repositório. Peça para ser adicionado como colaborador.":"Não consegui verificar: "+e.message}).then(function(){btn.disabled=false;btn.textContent="Entrar"})};
 
 /* novo script */
-var pnn=document.getElementById("pnn"),nset=document.getElementById("nset"),ntit=document.getElementById("ntit"),ntx=document.getElementById("ntx"),nob=document.getElementById("nob"),nonde=document.getElementById("nonde");
+var pnn=document.getElementById("pnn"),nset=document.getElementById("nset"),ntit=document.getElementById("ntit"),ntx=document.getElementById("ntx"),nob=document.getElementById("nob"),nsit=document.getElementById("nsit"),nonde=document.getElementById("nonde");
 Object.keys(SET).filter(function(k){return k!=="G"&&k!=="X"}).forEach(function(k){var o=el("option","",SET[k][0]);o.value=k;nset.appendChild(o)});
-function opcoesNovo(){nonde.innerHTML="";if(podeEditar()){var o1=el("option","","Equipe: todos veem");o1.value="eq";nonde.appendChild(o1)}var o2=el("option","","Meus: só neste navegador");o2.value="me";nonde.appendChild(o2)}
+function opcoesNovo(){nonde.innerHTML="";if(podeEditar()){var o1=el("option","","Equipe: todos veem (o supervisor analisa)");o1.value="eq";nonde.appendChild(o1)}if(isAprov()){var o3=el("option","","Oficiais: script oficial");o3.value="pl";nonde.appendChild(o3)}var o2=el("option","","Meus: só neste navegador");o2.value="me";nonde.appendChild(o2)}
 document.getElementById("add").onclick=function(){opcoesNovo();document.getElementById("nerr").textContent="";pnn.classList.add("on")};
 document.getElementById("ncl").onclick=function(){pnn.classList.remove("on")};pnn.onclick=function(e){if(e.target===pnn)pnn.classList.remove("on")};
 document.getElementById("nsv").onclick=function(){var t=ntit.value.trim(),x=ntx.value.trim();ntit.style.borderColor=t?"":"var(--S)";ntx.style.borderColor=x?"":"var(--S)";if(!t||!x)return;
 var k=nset.value,ob=nob.value.split("\n").map(function(s){return s.trim()}).filter(Boolean),btn=this;
-function limpa(){ntit.value="";ntx.value="";nob.value="";pnn.classList.remove("on");setor="";tabs();chips();render()}
-if(nonde.value==="eq"){btn.disabled=true;btn.textContent="Salvando...";
-salvar("Novo script: "+t,function(o){var n=1;o.D.forEach(function(m){if(m.s===k&&m.n>=n)n=m.n+1});o.D.push({k:"eq-n-"+Date.now().toString(36)+Math.random().toString(36).slice(2,6),s:k,p:"",n:n,t:t,sit:"",tx:x,ob:ob,novo:true,upd:{by:gh.login,at:Date.now()},hist:[]})})
-.then(function(){btn.disabled=false;btn.textContent="Salvar";aba="eq";limpa()}).catch(function(e){btn.disabled=false;btn.textContent="Salvar";document.getElementById("nerr").textContent=msgErro(e)});return}
+var sit=nsit.value.trim();
+function limpa(){ntit.value="";ntx.value="";nob.value="";nsit.value="";pnn.classList.remove("on");setor="";tabs();chips();render()}
+if(nonde.value==="eq"||nonde.value==="pl"){var dest=nonde.value;btn.disabled=true;btn.textContent="Salvando...";
+salvar("Novo script"+(dest==="pl"?" oficial":"")+": "+t,function(o){var L=dest==="pl"?o.PL:o.D;L.push({k:dest+"-n-"+Date.now().toString(36)+Math.random().toString(36).slice(2,6),s:k,p:"",n:proxN(L,k),t:t,sit:sit,tx:x,ob:ob,novo:true,upd:{by:gh.login,at:Date.now()},hist:[]})})
+.then(function(){btn.disabled=false;btn.textContent="Salvar";aba=dest;limpa()}).catch(function(e){btn.disabled=false;btn.textContent="Salvar";document.getElementById("nerr").textContent=msgErro(e)});return}
 var n2=1;mine.forEach(function(m){if(m.s===k&&m.n>=n2)n2=m.n+1});
-mine.push({id:"u"+Date.now().toString(36),s:k,n:n2,t:t,tx:x,sit:"",ob:ob});lsS("mine-scripts",mine);aba="me";limpa()};
+mine.push({id:"u"+Date.now().toString(36),s:k,n:n2,t:t,tx:x,sit:sit,ob:ob});lsS("mine-scripts",mine);aba="me";limpa()};
 var pn=document.getElementById("pnl");document.getElementById("gear").onclick=function(){pn.classList.add("on")};document.getElementById("pcl").onclick=function(){pn.classList.remove("on")};pn.onclick=function(e){if(e.target===pn)pn.classList.remove("on")};
 
 /* ---------- carregar e acompanhar atualizações ---------- */
