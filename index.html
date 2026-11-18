@@ -101,7 +101,7 @@ var CSV="https://docs.google.com/spreadsheets/d/e/2PACX-1vRvZQfEtEldDtrAbMPBDmgg
 var SET={P:["Pedagógico","🟦","var(--P)"],F:["Financeiro","🟩","var(--F)"],S:["Secretaria","🟥","var(--S)"],C:["Coordenação","🟨","var(--C)"],L:["Logística","🟧","var(--L)"],G:["Geral","🟪","var(--G)"],X:["Financeiro 2.0","💚","var(--X)"]};
 var DATA={ABERT:"",FECH:"",D:[],PL:[]},carregado=false;
 var AB2="Oi, [nome]! Tudo bem?",AVAL="Se o atendimento te ajudou, peço que me avalie com nota 5. Sua avaliação é muito importante para mim!";
-var KEY="notas-scripts",notas={},setor="",busca="",aba="eq",mine=[],cfg={},ui={};
+var KEY="notas-scripts",notas={},setor="",busca="",aba="pl",mine=[],cfg={},ui={};
 function lsG(k,d){try{var v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}}
 function lsS(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
 mine=lsG("mine-scripts",[]);cfg=lsG("cfg-scripts",{});notas=lsG(KEY,{});ui=lsG("ui-scripts",{});ui.co=ui.co||{};ui.em=ui.em||{};
@@ -132,7 +132,7 @@ function fb(){var a=document.createElement("textarea");a.value=t;document.body.a
 try{navigator.clipboard.writeText(t).then(ok,fb)}catch(e){fb()}}
 
 function tabs(){var t=document.getElementById("tabs");t.innerHTML="";var TH={eq:"Scripts criados pela equipe. O supervisor analisa e os melhores viram oficiais.",pl:"Scripts oficiais, aprovados pelo supervisor.",me:"Seus rascunhos. Ficam salvos só neste navegador.",sg:"Sugestões enviadas pelo botão 💡. Só quem aprova vê esta aba."};document.getElementById("thint").textContent=TH[aba]||"";
-[["eq","⭐ Equipe ("+itens("eq").length+")"],["pl","📘 Oficiais ("+itens("pl").length+")"],["me","👤 Meus ("+mine.length+")"]].concat(isAprov()?[["sg","📥 Sugestões ("+pendentes().length+")"]]:[]).forEach(function(a){var b=el("button","tab"+(aba===a[0]?" on":""),a[1]);b.onclick=function(){aba=a[0];setor="";tabs();chips();render()};t.appendChild(b)})}
+[["pl","📘 Oficiais ("+itens("pl").length+")"],["eq","⭐ Equipe ("+itens("eq").length+")"],["me","👤 Meus ("+mine.length+")"]].concat(isAprov()?[["sg","📥 Sugestões ("+pendentes().length+")"]]:[]).forEach(function(a){var b=el("button","tab"+(aba===a[0]?" on":""),a[1]);b.onclick=function(){aba=a[0];setor="";tabs();chips();render()};t.appendChild(b)})}
 function chips(){var c=document.getElementById("chips");c.innerHTML="";c.style.display=aba==="sg"?"none":"";
 [["","Todos"]].concat(keys().map(function(k){return[k,SET[k][1]+" "+SET[k][0]]})).forEach(function(a){var b=el("button","chip"+(setor===a[0]?" on":""),a[1]);b.onclick=function(){setor=a[0];chips();render()};c.appendChild(b)})}
 
