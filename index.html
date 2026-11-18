@@ -59,10 +59,11 @@ select{width:100%;padding:10px;border-radius:10px;border:1px solid var(--bd);bac
 </head>
 <body>
 <div class="w">
-<div class="hd"><h1>📚 Scripts backoffice</h1><span style="display:flex;gap:8px"><button class="gear" id="edit" title="Modo edição">🔑</button><button class="gear" id="add" title="Novo script">➕</button><button class="gear" id="gear" title="Configurações">⚙️</button></span></div>
+<div class="hd"><h1>📚 Scripts backoffice</h1><span style="display:flex;gap:8px"><button class="gear" id="sug" title="Sugerir um script novo">💡</button><button class="gear" id="edit" title="Modo edição">🔑</button><button class="gear" id="add" title="Novo script">➕</button><button class="gear" id="gear" title="Configurações">⚙️</button></span></div>
 <div class="sync" id="sync"></div>
 <div class="pnl" id="pnl"><div class="pbox"><div class="ph"><b>⚙️ Configurações</b><button class="b o" id="pcl">✕</button></div><div class="ps"><div class="pt">✍️ Assinatura</div><div class="lb">Meu nome (assinatura)</div><input type="text" id="cnome" placeholder="Seu nome"><div class="lb">Abertura</div><textarea id="cab"></textarea><div class="lb">Fechamento ({nome} vira o seu nome)</div><textarea id="cfe"></textarea><div class="lb">Abertura sem pedido de desculpas</div><textarea id="cab2"></textarea><div class="lb">Pedido de avaliação</div><textarea id="cav"></textarea><div class="bt"><button class="b o" id="crst">Restaurar padrão</button></div></div><div class="ps"><div class="pt">🎨 Aparência</div><div class="lb">Tamanho da letra</div><div class="bt" style="align-items:center"><button class="b o" id="zm">A−</button><b id="zv"></b><button class="b o" id="zp">A+</button></div><div class="lb">Tema</div><select id="uth"><option value="">Automático</option><option value="light">Claro</option><option value="dark">Escuro</option></select><div class="lb">Cor e emoji de cada setor</div><div id="usets"></div><div class="bt"><button class="b o" id="urst">Restaurar aparência padrão</button></div></div><p class="cnt">Assinatura, aparência, anotações e a aba Meus ficam salvas só neste navegador. Os scripts das abas Equipe e Oficiais são compartilhados: o que alguém altera aparece para todos.</p></div></div>
 <div class="pnl" id="pnn"><div class="pbox"><div class="ph"><b>➕ Novo script</b><button class="b o" id="ncl">✕</button></div><div class="lb">Salvar em</div><select id="nonde"></select><div class="lb">Setor</div><select id="nset"></select><div class="lb">Título</div><input type="text" id="ntit"><div class="lb">Ocorrência (o que aconteceu com o aluno)</div><textarea id="nsit" placeholder="Ex.: aluno não consegue agendar a SUB porque..."></textarea><div class="lb">Resposta</div><textarea id="ntx" style="min-height:170px"></textarea><div class="lb">Observações (opcional, uma por linha)</div><textarea id="nob"></textarea><div class="cnt" id="nerr" style="color:var(--S)"></div><div class="bt"><button class="b" id="nsv" style="background:var(--P)">Salvar</button></div></div></div>
+<div class="pnl" id="pns"><div class="pbox"><div class="ph"><b>💡 Sugerir um script</b><button class="b o" id="scl">✕</button></div><p class="cnt" style="margin-top:0">Pegou uma ocorrência que ainda não tem resposta pronta? Mande aqui. O supervisor analisa e, se aprovar, o script entra na página para todos. Não precisa de login.</p><div id="sform"><div class="lb">Seu nome</div><input type="text" id="snome"><div class="lb">Setor</div><select id="sset"></select><div class="lb">Título (assunto)</div><input type="text" id="stit" placeholder="Ex.: Aluno não consegue agendar a SUB"><div class="lb">Ocorrência (o que aconteceu com o aluno)</div><textarea id="soc"></textarea><div class="lb">Resposta sugerida</div><textarea id="sresp" style="min-height:170px"></textarea><div class="lb">Observações (opcional)</div><textarea id="sobs"></textarea><div class="cnt" id="serr" style="color:var(--S)"></div><div class="bt"><button class="b" id="ssv" style="background:var(--P)">Enviar sugestão</button></div></div><div id="sok" style="display:none"><div class="warn" style="border-color:var(--F)">✅ Sugestão enviada! O supervisor vai analisar.</div><div class="bt"><button class="b o" id="snova">Enviar outra</button></div></div></div></div>
 <div class="pnl" id="plg"><div class="pbox"><div class="ph"><b>🔑 Modo edição</b><button class="b o" id="lcl">✕</button></div><div class="cnt" id="lgst"></div><button class="b o" id="lgout" style="display:none">Sair do modo edição</button>
 <div id="lgform"><div class="lb">Como entrar (uma vez por navegador)</div><ol class="lgi"><li>Peça para ser adicionado(a) como colaborador(a) no repositório do GitHub.</li><li>No GitHub, vá em Settings &gt; Developer settings &gt; Personal access tokens &gt; <b>Tokens (classic)</b> &gt; Generate new token (classic).</li><li>Dê um nome (ex.: Scripts backoffice), escolha a validade e marque só a opção <b>public_repo</b>. Clique em Generate token.</li><li>Copie o token e cole aqui embaixo.</li></ol><div class="lb">Token do GitHub</div><input type="text" id="lgtok" autocomplete="off" placeholder="ghp_..."><div class="cnt" id="lgerr" style="color:var(--S)"></div><div class="bt"><button class="b" id="lgok" style="background:var(--P)">Entrar</button></div><p class="cnt">O token fica guardado só neste navegador. Não use o modo edição em computador compartilhado.</p></div></div></div>
 <div class="tabs" id="tabs"></div>
@@ -79,6 +80,10 @@ select{width:100%;padding:10px;border-radius:10px;border:1px solid var(--bd);bac
 var REPO="Joabvitru/coloque-scripts-backoffice",BRANCH="main",ARQ="scripts.json";
 /* usuários do GitHub que aprovam scripts e editam os Oficiais */
 var APROVADORES=["joabvitru"];
+/* caixa de sugestões (Formulário Google + planilha publicada em CSV) */
+var FORM="https://docs.google.com/forms/d/e/1FAIpQLSfCccAsHbXc0BCERra7CfrAEb6FQmzg9_LVBBqBATZRc-eUSw/formResponse";
+var FE={nome:"entry.323359756",setor:"entry.709674631",titulo:"entry.1281784994",oc:"entry.687623867",resp:"entry.300044585",obs:"entry.639639747"};
+var CSV="https://docs.google.com/spreadsheets/d/e/2PACX-1vRvZQfEtEldDtrAbMPBDmggDu0ImCSu67PkzDUPLOQyvqH2CJ70ZFaHukW8Yy07c1MLtynmZd9j-Iiv/pub?gid=1735239979&single=true&output=csv";
 /* ========================== */
 var SET={P:["Pedagógico","🟦","var(--P)"],F:["Financeiro","🟩","var(--F)"],S:["Secretaria","🟥","var(--S)"],C:["Coordenação","🟨","var(--C)"],L:["Logística","🟧","var(--L)"],G:["Geral","🟪","var(--G)"],X:["Financeiro 2.0","💚","var(--X)"]};
 var DATA={ABERT:"",FECH:"",D:[],PL:[]},carregado=false;
@@ -114,8 +119,8 @@ function fb(){var a=document.createElement("textarea");a.value=t;document.body.a
 try{navigator.clipboard.writeText(t).then(ok,fb)}catch(e){fb()}}
 
 function tabs(){var t=document.getElementById("tabs");t.innerHTML="";
-[["eq","⭐ Equipe ("+itens("eq").length+")"],["pl","📘 Oficiais ("+itens("pl").length+")"],["me","👤 Meus ("+mine.length+")"]].forEach(function(a){var b=el("button","tab"+(aba===a[0]?" on":""),a[1]);b.onclick=function(){aba=a[0];setor="";tabs();chips();render()};t.appendChild(b)})}
-function chips(){var c=document.getElementById("chips");c.innerHTML="";
+[["eq","⭐ Equipe ("+itens("eq").length+")"],["pl","📘 Oficiais ("+itens("pl").length+")"],["me","👤 Meus ("+mine.length+")"]].concat(isAprov()?[["sg","📥 Sugestões ("+pendentes().length+")"]]:[]).forEach(function(a){var b=el("button","tab"+(aba===a[0]?" on":""),a[1]);b.onclick=function(){aba=a[0];setor="";tabs();chips();render()};t.appendChild(b)})}
+function chips(){var c=document.getElementById("chips");c.innerHTML="";c.style.display=aba==="sg"?"none":"";
 [["","Todos"]].concat(keys().map(function(k){return[k,SET[k][1]+" "+SET[k][0]]})).forEach(function(a){var b=el("button","chip"+(setor===a[0]?" on":""),a[1]);b.onclick=function(){setor=a[0];chips();render()};c.appendChild(b)})}
 
 /* ---------- GitHub ---------- */
@@ -124,7 +129,7 @@ function b64e(s){return btoa(unescape(encodeURIComponent(s)))}
 function api(path,opt){opt=opt||{};var h={"Accept":"application/vnd.github+json"};if(gh&&gh.token)h.Authorization="Bearer "+gh.token;if(opt.body)h["Content-Type"]="application/json";
 return fetch("https://api.github.com"+path,{method:opt.method||"GET",headers:h,body:opt.body,cache:"no-store"}).then(function(r){return r.json().catch(function(){return {}}).then(function(j){if(!r.ok){var e=new Error(j.message||("Erro "+r.status));e.status=r.status;throw e}return j})})}
 function serializa(o){function arr(a){return "[\n"+a.map(function(x){return JSON.stringify(x)}).join(",\n")+"\n]"}
-return '{"v":'+JSON.stringify(o.v||0)+',"ABERT":'+JSON.stringify(o.ABERT)+',"FECH":'+JSON.stringify(o.FECH)+',\n"D":'+arr(o.D)+',\n"PL":'+arr(o.PL)+"}\n"}
+return '{"v":'+JSON.stringify(o.v||0)+',"ABERT":'+JSON.stringify(o.ABERT)+',"FECH":'+JSON.stringify(o.FECH)+',"sug":'+JSON.stringify(o.sug||{})+',\n"D":'+arr(o.D)+',\n"PL":'+arr(o.PL)+"}\n"}
 /* lê a versão mais recente, aplica a mudança e grava; tenta de novo se alguém salvou no meio */
 function salvar(msg,muda,tent){tent=tent||0;
 return api("/repos/"+REPO+"/contents/"+ARQ+"?ref="+BRANCH+"&t="+Date.now()).then(function(f){var o=JSON.parse(b64d(f.content));var r=muda(o);if(r===false)return {abortado:true};
@@ -146,7 +151,7 @@ if(d.mine){
  if(podeEditar()){var bm=el("button","b o","📤 Enviar para a Equipe");bm.onclick=function(){if(!bm.dataset.c){bm.dataset.c=1;bm.textContent="Confirmar? Todos vão ver e o supervisor analisa";return}
   bm.disabled=true;bm.textContent="Enviando...";salvar("Novo script (da aba Meus): "+d.t,function(o){o.D.push({k:novoK("eq"),s:d.s,p:"",n:proxN(o.D,d.s),t:d.t,sit:d.sit||"",tx:d.tx,ob:d.ob||[],novo:true,upd:{by:gh.login,at:Date.now()},hist:[]})})
   .then(function(){mine=mine.filter(function(x){return x.id!==d.id});lsS("mine-scripts",mine);aba="eq";tabs();chips();render()}).catch(function(e){bm.disabled=false;bm.textContent="📤 Enviar para a Equipe";aviso(b,msgErro(e))})};bt.appendChild(bm)}
- else{var bs=el("button","b o","📤 Copiar sugestão para o supervisor");bs.onclick=function(){copiar("Sugestão de script\nSetor: "+SET[d.s][0]+"\nTítulo: "+d.t+(d.sit?"\nOcorrência: "+d.sit:"")+"\n\nResposta:\n"+d.tx+(d.ob&&d.ob.length?"\n\nObservações:\n"+d.ob.join("\n"):""),bs)};bt.appendChild(bs)}
+ else{var bs=el("button","b o","💡 Enviar como sugestão ao supervisor");bs.onclick=function(){abrirSug({setor:SET[d.s][0],titulo:d.t,oc:d.sit||"",resp:d.tx,obs:(d.ob||[]).join("\n")})};bt.appendChild(bs)}
  return}
 if(d.tab==="eq"&&isAprov()){var bp=el("button","b o","⬆️ Enviar para Oficiais");bp.onclick=function(){if(b.querySelector(".prom"))return;
  var f=el("div","warn prom");f.appendChild(el("div","","Este script vai sair da aba Equipe e virar um script oficial. Em qual setor ele fica nos Oficiais?"));
@@ -212,7 +217,7 @@ editing=Math.max(0,editing-1);tabs();render()})
 /* ---------- lista ---------- */
 function snip(d,q){var t=d.tx.replace(/\s+/g," ").trim();t=t.replace(/^(Oi|Olá)[^.!?]*[.!?]\s*(Tudo bem\?\s*)?(Me chamo[^.!?]*[.!?]\s*)?/,"");if(q){var k=nz(t).indexOf(q);if(k>-1){var s=Math.max(0,k-60);return (s>0?"…":"")+t.slice(s,s+170)+"…"}}return t.slice(0,150)+(t.length>150?"…":"")}
 function render(){if(!carregado)return;if(editing){pend=true;document.getElementById("upd").style.display="";return}
-pend=false;document.getElementById("upd").style.display="none";
+pend=false;document.getElementById("upd").style.display="none";if(aba==="sg"&&!isAprov())aba="eq";if(aba==="sg"){renderSug();return}
 var L=document.getElementById("list");L.innerHTML="";var q=nz(busca),n=0,DS=dset();
 keys().forEach(function(k){if(setor&&setor!==k)return;
 var its=DS.filter(function(d){return d.s===k&&(!q||nz(code(d)+" "+d.t+" "+(d.sit||"")+" "+d.tx+" "+d.ob.join(" ")+" "+(notas[nk(d)]||"")).indexOf(q)>-1)});
@@ -265,7 +270,7 @@ document.getElementById("lgout").onclick=function(){gh=null;try{localStorage.rem
 document.getElementById("lgok").onclick=function(){var t=document.getElementById("lgtok").value.trim(),er=document.getElementById("lgerr"),btn=this;er.textContent="";if(!t){er.textContent="Cole o token.";return}
 btn.disabled=true;btn.textContent="Verificando...";var tmp={token:t,login:""};var old=gh;gh=tmp;
 fetch("https://api.github.com/user",{headers:{"Accept":"application/vnd.github+json","Authorization":"Bearer "+t},cache:"no-store"}).then(function(r){if(!r.ok){var e=new Error("Erro "+r.status);e.status=r.status;throw e}var sc=r.headers.get("x-oauth-scopes");if(sc!==null&&!/(^|,\s*)(public_repo|repo)(\s*,|$)/.test(sc)){var e2=new Error("escopo");e2.escopo=true;throw e2}return r.json()}).then(function(u){tmp.login=u.login;return api("/repos/"+REPO)}).then(function(r){if(!r.permissions||!r.permissions.push){var e=new Error("sem permissão");e.status=403;throw e}
-gh=tmp;lsS("gh-login",gh);document.getElementById("lgtok").value="";plg.classList.remove("on");estadoLogin();tabs();render()})
+gh=tmp;lsS("gh-login",gh);document.getElementById("lgtok").value="";plg.classList.remove("on");estadoLogin();tabs();render();carregaSug()})
 .catch(function(e){gh=old;er.textContent=e.escopo?"Esse token foi criado sem a opção public_repo marcada. Gere um novo token (classic) marcando public_repo e cole aqui.":e.status===401?"Token inválido ou expirado.":e.status===403||e.status===404?"Esse usuário do GitHub não tem permissão de escrita no repositório. Peça para ser adicionado como colaborador.":"Não consegui verificar: "+e.message}).then(function(){btn.disabled=false;btn.textContent="Entrar"})};
 
 /* novo script */
@@ -285,6 +290,51 @@ var n2=1;mine.forEach(function(m){if(m.s===k&&m.n>=n2)n2=m.n+1});
 mine.push({id:"u"+Date.now().toString(36),s:k,n:n2,t:t,tx:x,sit:sit,ob:ob});lsS("mine-scripts",mine);aba="me";limpa()};
 var pn=document.getElementById("pnl");document.getElementById("gear").onclick=function(){pn.classList.add("on")};document.getElementById("pcl").onclick=function(){pn.classList.remove("on")};pn.onclick=function(e){if(e.target===pn)pn.classList.remove("on")};
 
+
+/* ---------- sugestões ---------- */
+var SUG=[],sugOk=false,sugErr="";
+function hashS(t){var h=5381;for(var i=0;i<t.length;i++)h=((h<<5)+h+t.charCodeAt(i))|0;return "s"+(h>>>0).toString(36)}
+function parseCSV(t){var rows=[],row=[],f="",q=false;for(var i=0;i<t.length;i++){var c=t[i];if(q){if(c==='"'){if(t[i+1]==='"'){f+='"';i++}else q=false}else f+=c}else if(c==='"')q=true;else if(c===","){row.push(f);f=""}else if(c==="\n"){row.push(f);rows.push(row);row=[];f=""}else if(c!=="\r")f+=c}if(f!==""||row.length){row.push(f);rows.push(row)}return rows}
+function carregaSug(){if(!isAprov())return;fetch(CSV+"&t="+Date.now(),{cache:"no-store"}).then(function(r){if(!r.ok)throw 0;return r.text()}).then(function(t){var rows=parseCSV(t).slice(1).filter(function(r){return r.length>=6&&(r[3]||r[5])});
+var novo=rows.map(function(r){return {id:hashS(r[0]+"|"+r[1]+"|"+r[3]+"|"+r[5]),quando:r[0]||"",nome:r[1]||"",setor:r[2]||"",t:r[3]||"",oc:r[4]||"",tx:r[5]||"",obs:r[6]||""}});
+var mudou=JSON.stringify(novo)!==JSON.stringify(SUG);SUG=novo;sugOk=true;sugErr="";if(mudou||aba==="sg"){tabs();if(aba==="sg")render()}}).catch(function(){sugErr="Não consegui ler as sugestões agora. Tente de novo em alguns minutos.";if(aba==="sg")render()})}
+function pendentes(){var h=DATA.sug||{};return SUG.filter(function(x){return !h[x.id]})}
+function setorDe(txt){var n=nz(txt||"");var ks=Object.keys(SET);for(var i=0;i<ks.length;i++){if(n&&nz(SET[ks[i]][0])===n)return ks[i]}for(var j=0;j<ks.length;j++){var a=nz(SET[ks[j]][0]);if(n&&(n.indexOf(a)>-1||a.indexOf(n)>-1))return ks[j]}return "P"}
+function renderSug(){var L=document.getElementById("list");L.innerHTML="";var ps=pendentes().slice().reverse(),h=DATA.sug||{};
+document.getElementById("cnt").textContent=ps.length+" sugest"+(ps.length===1?"ão":"ões")+" para analisar";
+L.appendChild(el("p","cnt","As sugestões enviadas pelo botão 💡 aparecem aqui em até 5 minutos. Só quem aprova vê esta aba."));
+if(sugErr)L.appendChild(el("div","warn",sugErr));
+if(!sugOk&&!sugErr){L.appendChild(el("div","em","Carregando sugestões..."));return}
+if(!ps.length)L.appendChild(el("div","em","Nenhuma sugestão nova."));
+ps.forEach(function(x){var c=el("div","card");c.style.setProperty("--c","var(--G)");var b=el("div","bd");b.style.paddingTop="12px";c.appendChild(b);
+b.appendChild(el("div","edby","Enviada"+(x.nome?" por "+x.nome:"")+(x.quando?" em "+x.quando:"")+(x.setor?" · setor informado: "+x.setor:"")));
+b.appendChild(el("div","lb","Título"));var it=el("input");it.type="text";it.value=x.t;b.appendChild(it);
+b.appendChild(el("div","lb","Ocorrência"));var io=el("textarea");io.value=x.oc;b.appendChild(io);
+b.appendChild(el("div","lb","Resposta"));var ir=el("textarea");ir.value=x.tx;ir.style.minHeight="160px";b.appendChild(ir);
+if(x.obs){b.appendChild(el("div","lb","Observações"));b.appendChild(el("div","",x.obs))}
+b.appendChild(el("div","lb","Setor"));var ss=el("select");Object.keys(SET).forEach(function(k){var o=el("option","",SET[k][0]);o.value=k;ss.appendChild(o)});ss.value=setorDe(x.setor);b.appendChild(ss);
+var bt=el("div","bt");var be=el("button","b","➕ Adicionar à Equipe");be.style.background="var(--P)";var bp=el("button","b","📘 Adicionar aos Oficiais");bp.style.background="var(--F)";var bd=el("button","b o","Descartar");bt.appendChild(be);bt.appendChild(bp);bt.appendChild(bd);b.appendChild(bt);
+function faz(st,btn){var t=it.value.trim(),tx=ir.value.trim();if(st!=="desc"&&(!t||!tx)){aviso(b,"Preencha o título e a resposta antes de adicionar.");return}
+if(st==="desc"&&!btn.dataset.c){btn.dataset.c=1;btn.textContent="Confirmar descarte?";return}
+[be,bp,bd].forEach(function(z){z.disabled=true});btn.textContent="Salvando...";var k=ss.value;if(st==="eq"&&(k==="G"||k==="X"))k="P";
+salvar((st==="desc"?"Descartar sugestão: ":st==="pl"?"Sugestão aprovada (Oficiais): ":"Sugestão aprovada (Equipe): ")+(t||x.t),function(o){o.sug=o.sug||{};if(o.sug[x.id])return false;o.sug[x.id]={st:st,by:gh.login,at:Date.now()};
+if(st!=="desc"){var Lst=st==="pl"?o.PL:o.D;var ob=x.obs?x.obs.split("\n").map(function(z){return z.trim()}).filter(Boolean):[];ob.push("Sugerido"+(x.nome?" por "+x.nome:"")+" pela caixa de sugestões.");
+Lst.push({k:novoK(st),s:k,p:"",n:proxN(Lst,k),t:t,sit:io.value.trim(),tx:tx,ob:ob,novo:true,upd:{by:gh.login,at:Date.now()},hist:[]})}})
+.then(function(r){if(r&&r.abortado){DATA.sug=DATA.sug||{};DATA.sug[x.id]=1}tabs();render()}).catch(function(e){[be,bp,bd].forEach(function(z){z.disabled=false});be.textContent="➕ Adicionar à Equipe";bp.textContent="📘 Adicionar aos Oficiais";bd.textContent="Descartar";aviso(b,msgErro(e))})}
+be.onclick=function(){faz("eq",be)};bp.onclick=function(){faz("pl",bp)};bd.onclick=function(){faz("desc",bd)};L.appendChild(c)});
+var feitas=SUG.filter(function(x){return h[x.id]});if(feitas.length)L.appendChild(el("p","cnt",feitas.length+" sugest"+(feitas.length===1?"ão já analisada":"ões já analisadas")+"."))}
+/* painel de envio (qualquer pessoa) */
+var pns=document.getElementById("pns"),sset=document.getElementById("sset");Object.keys(SET).forEach(function(k){var o=el("option","",SET[k][0]);o.value=SET[k][0];sset.appendChild(o)});
+function abrirSug(pre){pre=pre||{};document.getElementById("sform").style.display="";document.getElementById("sok").style.display="none";document.getElementById("serr").textContent="";
+document.getElementById("snome").value=cfg.nome||lsG("sug-nome","")||"";if(pre.setor)sset.value=pre.setor;
+document.getElementById("stit").value=pre.titulo||"";document.getElementById("soc").value=pre.oc||"";document.getElementById("sresp").value=pre.resp||"";document.getElementById("sobs").value=pre.obs||"";pns.classList.add("on")}
+document.getElementById("sug").onclick=function(){abrirSug()};document.getElementById("scl").onclick=function(){pns.classList.remove("on")};pns.onclick=function(e){if(e.target===pns)pns.classList.remove("on")};
+document.getElementById("snova").onclick=function(){abrirSug()};
+document.getElementById("ssv").onclick=function(){var btn=this,v=function(id){return document.getElementById(id).value.trim()};var t=v("stit"),r=v("sresp");
+document.getElementById("stit").style.borderColor=t?"":"var(--S)";document.getElementById("sresp").style.borderColor=r?"":"var(--S)";if(!t||!r){document.getElementById("serr").textContent="Preencha pelo menos o título e a resposta.";return}
+lsS("sug-nome",v("snome"));var body=new URLSearchParams();body.append(FE.nome,v("snome"));body.append(FE.setor,sset.value);body.append(FE.titulo,t);body.append(FE.oc,v("soc"));body.append(FE.resp,r);body.append(FE.obs,v("sobs"));
+btn.disabled=true;btn.textContent="Enviando...";
+fetch(FORM,{method:"POST",mode:"no-cors",body:body}).then(function(){document.getElementById("sform").style.display="none";document.getElementById("sok").style.display=""}).catch(function(){document.getElementById("serr").textContent="Não consegui enviar. Verifique a internet e tente de novo."}).then(function(){btn.disabled=false;btn.textContent="Enviar sugestão"})};
 /* ---------- carregar e acompanhar atualizações ---------- */
 function sync(s){var e=document.getElementById("sync");e.className="sync "+s;e.textContent=s==="ok"?"● Versão mais recente · atualiza sozinha a cada minuto":s==="wait"?"○ Carregando...":"○ Sem conexão: mostrando a última versão salva neste navegador"}
 function usa(o){if(!o||!Array.isArray(o.D)||!Array.isArray(o.PL))return false;if(carregado&&DATA.v&&o.v&&o.v<DATA.v)return false;DATA=o;lsS("cache-scripts",o);carregado=true;return true}
@@ -292,7 +342,7 @@ function busca1(primeira){return fetch(ARQ+"?t="+Date.now(),{cache:"no-store"}).
 buildU();applyUI();chips();estadoLogin();sync("wait");
 document.getElementById("list").appendChild(el("div","em","Carregando scripts..."));
 busca1(true);
-setInterval(function(){if(!document.hidden)busca1(false)},60000);
+setInterval(function(){if(!document.hidden)busca1(false);carregaSug()},60000);carregaSug();
 document.addEventListener("visibilitychange",function(){if(!document.hidden)busca1(false)});
 
 </script>
