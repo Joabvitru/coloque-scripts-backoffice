@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Scripts backoffice</title>
+<style>
+:root{--bg:#f6f7fb;--card:#fff;--tx:#1d2330;--mu:#667085;--bd:#e3e6ee;--sh:0 1px 3px rgba(20,30,60,.08);
+--P:#2563eb;--F:#16a34a;--S:#dc2626;--C:#ca8a04;--L:#ea580c;--G:#7c3aed;--X:#0d9488;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12141a;--card:#1b1e27;--tx:#eceef4;--mu:#9aa3b5;--bd:#2c3140;--sh:none;--P:#60a5fa;--F:#4ade80;--S:#f87171;--C:#facc15;--L:#fb923c;--G:#a78bfa;--X:#2dd4bf;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#12141a;--card:#1b1e27;--tx:#eceef4;--mu:#9aa3b5;--bd:#2c3140;--sh:none;--P:#60a5fa;--F:#4ade80;--S:#f87171;--C:#facc15;--L:#fb923c;--G:#a78bfa;--X:#2dd4bf;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:18px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.w{max-width:940px;margin:0 auto;padding:20px 16px 60px}
+h1{margin:0 0 4px;font-size:26px}
+.sub{color:var(--mu);margin:0 0 16px}
+.top{position:sticky;top:env(safe-area-inset-top,0px);background:var(--bg);padding:8px 0 10px;z-index:5}
+input[type=search]{width:100%;padding:13px 16px;font-size:16px;border-radius:12px;border:1px solid var(--bd);background:var(--card);color:var(--tx)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.chip{border:1px solid var(--bd);background:var(--card);color:var(--tx);padding:8px 14px;border-radius:999px;cursor:pointer;font-size:16px}
+.chip.on{background:var(--tx);color:var(--bg);border-color:var(--tx)}
+.cnt{color:var(--mu);font-size:16px;margin:6px 0}
+.sec{margin:26px 0 10px;padding:8px 0;border-bottom:3px solid var(--c);font-weight:700;font-size:18px;display:flex;gap:8px;align-items:center}
+.sec:before{content:"";width:14px;height:14px;border-radius:4px;background:var(--c)}
+.card{background:var(--card);border:1px solid var(--bd);border-left:6px solid var(--c);border-radius:12px;margin:10px 0;box-shadow:var(--sh)}
+summary{cursor:pointer;padding:14px 16px;list-style:none;display:flex;gap:10px;align-items:center;font-weight:600;font-size:18px}
+summary::-webkit-details-marker{display:none}
+.id{background:var(--c);color:#fff;border-radius:6px;padding:1px 9px;font-size:15px;white-space:nowrap}
+.bd{padding:0 16px 16px}
+.lb{font-size:14px;text-transform:uppercase;letter-spacing:.05em;color:var(--mu);margin:12px 0 4px}
+.tx{white-space:pre-wrap;background:var(--bg);border:1px solid var(--bd);border-radius:10px;padding:16px;font-size:19px;line-height:1.7}
+.ob{color:var(--mu);font-size:17px;margin:0;padding-left:18px}
+.bt{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+button.b{border:0;background:var(--c);color:#fff;padding:11px 16px;border-radius:9px;font-size:16px;cursor:pointer}
+button.b.o{background:transparent;color:var(--tx);border:1px solid var(--bd)}
+textarea{width:100%;min-height:60px;border-radius:10px;border:1px solid var(--bd);background:var(--bg);color:var(--tx);padding:10px;font:inherit}
+.em{text-align:center;color:var(--mu);padding:30px}
+.mold{background:var(--card);border:1px dashed var(--bd);border-radius:12px;padding:12px 16px;margin:8px 0;font-size:14px;color:var(--mu)}
+.tabs{display:flex;gap:8px;margin:8px 0 4px}.tab{flex:1;padding:11px;border-radius:12px;border:1px solid var(--bd);background:var(--card);color:var(--tx);font-size:15px;font-weight:600;cursor:pointer}.tab.on{background:var(--tx);color:var(--bg);border-color:var(--tx)}
+.cfg{background:var(--card);border:1px solid var(--bd);border-radius:12px;margin:8px 0}.cfg summary{font-weight:600}input[type=text]{width:100%;padding:10px;border-radius:10px;border:1px solid var(--bd);background:var(--bg);color:var(--tx);font:inherit}
+select{width:100%;padding:10px;border-radius:10px;border:1px solid var(--bd);background:var(--bg);color:var(--tx);font:inherit}.urow{display:flex;gap:10px;align-items:center;margin:6px 0}.urow span{flex:1}.urow input[type=color]{width:46px;height:38px;border:0;padding:0;background:none;cursor:pointer}.urow input[type=text]{width:80px;text-align:center;font-size:20px}
+.hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}.gear{border:1px solid var(--bd);background:var(--card);border-radius:50%;width:44px;height:44px;font-size:22px;cursor:pointer;color:var(--tx)}.pnl{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:20;justify-content:center;align-items:flex-start;padding:calc(env(safe-area-inset-top,0px) + 16px) 12px 16px;overflow:auto}.pnl.on{display:flex}.pbox{background:var(--card);border:1px solid var(--bd);border-radius:16px;width:100%;max-width:520px;padding:16px}.ph{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}.ps{border-top:1px solid var(--bd);padding:12px 0}.pt{font-weight:700;margin-bottom:4px}
+.cmp{display:flex;gap:10px;align-items:center;margin:8px 0;cursor:pointer}.cmp input{width:20px;height:20px;flex:none}
+.tt{flex:1;min-width:0}.pv{font-weight:400;font-size:15px;color:var(--mu);margin-top:3px;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.sync{font-size:14px;margin:0 0 8px;color:var(--mu)}.sync.ok{color:var(--F)}.sync.off,.sync.slow{color:var(--C)}
+.warn{background:color-mix(in srgb,var(--C) 15%,var(--card));border:1px solid var(--C);border-radius:10px;padding:10px 12px;margin:10px 0;font-size:15px}
+.upd{position:sticky;top:0;z-index:6}
+.edby{font-size:13px;color:var(--mu);margin:10px 0 0}
+.novo{display:inline-block;margin-left:8px;font-size:12px;font-weight:600;background:var(--c);color:#fff;border-radius:999px;padding:0 8px;vertical-align:middle}
+.hist{margin-top:14px;border:1px solid var(--bd);border-radius:10px}.hist>summary{font-size:15px;font-weight:600;padding:10px 12px}.hit{padding:0 12px 12px;border-top:1px dashed var(--bd)}
+.tx.sm{font-size:15px;line-height:1.5;padding:10px;margin:6px 0}
+.edf .lb:first-child{color:var(--tx);font-weight:700}
+.gear.on{background:var(--F);border-color:var(--F)}
+.lgi{font-size:15px;color:var(--mu);padding-left:20px}.lgi li{margin:4px 0}
+.exc{margin-top:28px;padding:0 12px 8px}.exc .urow span{font-size:15px}
+</style>
+</head>
+<body>
+<div class="w">
+<div class="hd"><h1>📚 Scripts backoffice</h1><span style="display:flex;gap:8px"><button class="gear" id="edit" title="Modo edição">🔑</button><button class="gear" id="add" title="Novo script">➕</button><button class="gear" id="gear" title="Configurações">⚙️</button></span></div>
+<div class="sync" id="sync"></div>
+<div class="pnl" id="pnl"><div class="pbox"><div class="ph"><b>⚙️ Configurações</b><button class="b o" id="pcl">✕</button></div><div class="ps"><div class="pt">✍️ Assinatura</div><div class="lb">Meu nome (assinatura)</div><input type="text" id="cnome" placeholder="Seu nome"><div class="lb">Abertura</div><textarea id="cab"></textarea><div class="lb">Fechamento ({nome} vira o seu nome)</div><textarea id="cfe"></textarea><div class="lb">Abertura sem pedido de desculpas</div><textarea id="cab2"></textarea><div class="lb">Pedido de avaliação</div><textarea id="cav"></textarea><div class="bt"><button class="b o" id="crst">Restaurar padrão</button></div></div><div class="ps"><div class="pt">🎨 Aparência</div><div class="lb">Tamanho da letra</div><div class="bt" style="align-items:center"><button class="b o" id="zm">A−</button><b id="zv"></b><button class="b o" id="zp">A+</button></div><div class="lb">Tema</div><select id="uth"><option value="">Automático</option><option value="light">Claro</option><option value="dark">Escuro</option></select><div class="lb">Cor e emoji de cada setor</div><div id="usets"></div><div class="bt"><button class="b o" id="urst">Restaurar aparência padrão</button></div></div><p class="cnt">Assinatura, aparência, anotações e a aba Meus ficam salvas só neste navegador. Os scripts das abas Equipe e Oficiais são compartilhados: o que alguém altera aparece para todos.</p></div></div>
+<div class="pnl" id="pnn"><div class="pbox"><div class="ph"><b>➕ Novo script</b><button class="b o" id="ncl">✕</button></div><div class="lb">Salvar em</div><select id="nonde"></select><div class="lb">Setor</div><select id="nset"></select><div class="lb">Título</div><input type="text" id="ntit"><div class="lb">Resposta</div><textarea id="ntx" style="min-height:170px"></textarea><div class="lb">Observações (opcional, uma por linha)</div><textarea id="nob"></textarea><div class="cnt" id="nerr" style="color:var(--S)"></div><div class="bt"><button class="b" id="nsv" style="background:var(--P)">Salvar</button></div></div></div>
+<div class="pnl" id="plg"><div class="pbox"><div class="ph"><b>🔑 Modo edição</b><button class="b o" id="lcl">✕</button></div><div class="cnt" id="lgst"></div><button class="b o" id="lgout" style="display:none">Sair do modo edição</button>
+<div id="lgform"><div class="lb">Como entrar (uma vez por navegador)</div><ol class="lgi"><li>Peça para ser adicionado(a) como colaborador(a) no repositório do GitHub.</li><li>No GitHub, vá em Settings &gt; Developer settings &gt; Personal access tokens &gt; <b>Tokens (classic)</b> &gt; Generate new token (classic).</li><li>Dê um nome (ex.: Scripts backoffice), escolha a validade e marque só a opção <b>public_repo</b>. Clique em Generate token.</li><li>Copie o token e cole aqui embaixo.</li></ol><div class="lb">Token do GitHub</div><input type="text" id="lgtok" autocomplete="off" placeholder="ghp_..."><div class="cnt" id="lgerr" style="color:var(--S)"></div><div class="bt"><button class="b" id="lgok" style="background:var(--P)">Entrar</button></div><p class="cnt">O token fica guardado só neste navegador. Não use o modo edição em computador compartilhado.</p></div></div></div>
+<div class="tabs" id="tabs"></div>
+<div class="top">
+<div class="warn upd" id="upd" style="display:none">A equipe atualizou scripts. A lista vai se atualizar quando você terminar de editar.</div>
+<input type="search" id="q" placeholder="🔍 Buscar por assunto, palavra ou número (ex.: SUB, boleto, P-03)">
+<div class="chips" id="chips"></div>
+</div>
+<div class="cnt" id="cnt"></div>
+<div id="list"></div>
+</div>
+<script>
+/* ====== CONFIGURAÇÃO ====== */
+var REPO="Joabvitru/coloque-scripts-backoffice",BRANCH="main",ARQ="scripts.json";
+/* ========================== */
+var SET={P:["Pedagógico","🟦","var(--P)"],F:["Financeiro","🟩","var(--F)"],S:["Secretaria","🟥","var(--S)"],C:["Coordenação","🟨","var(--C)"],L:["Logística","🟧","var(--L)"],G:["Geral","🟪","var(--G)"],X:["Financeiro 2.0","💚","var(--X)"]};
+var DATA={ABERT:"",FECH:"",D:[],PL:[]},carregado=false;
+var AB2="Oi, [nome]! Tudo bem?",AVAL="Se o atendimento te ajudou, peço que me avalie com nota 5. Sua avaliação é muito importante para mim!";
+var KEY="notas-scripts",notas={},setor="",busca="",aba="eq",mine=[],cfg={},ui={};
+function lsG(k,d){try{var v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}}
+function lsS(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+mine=lsG("mine-scripts",[]);cfg=lsG("cfg-scripts",{});notas=lsG(KEY,{});ui=lsG("ui-scripts",{});ui.co=ui.co||{};ui.em=ui.em||{};
+var gh=lsG("gh-login",null); /* {token,login} */
+var editing=0,pend=false,abertos={};
+
+function el(tag,cls,txt){var e=document.createElement(tag);if(cls)e.className=cls;if(txt!==undefined)e.textContent=txt;return e}
+function S(x){return typeof x==="string"?x:""}
+function A(x){return Array.isArray(x)?x.filter(function(y){return typeof y==="string"}):[]}
+function nz(s){return s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"")}
+function code(d){return (d.p||d.s)+"-"+(d.n<10?"0":"")+d.n}
+function nk(d){return d.mine?"me:"+d.id:d.k}
+function meuNome(){return cfg.nome||"[seu nome]"}
+function full(t){return ((cfg.ab!=null?cfg.ab+"\n\n":DATA.ABERT)+t+(cfg.fe!=null?"\n\n"+cfg.fe:DATA.FECH)).split("{nome}").join(meuNome())}
+function full2(t){return ((cfg.ab2!=null?cfg.ab2:AB2)+"\n\n"+t+"\n\n"+(cfg.av!=null?cfg.av:AVAL)+(cfg.fe!=null?"\n\n"+cfg.fe:DATA.FECH)).split("{nome}").join(meuNome())}
+function dt(ms){if(!ms)return "";var d=new Date(ms);function z(n){return(n<10?"0":"")+n}return z(d.getDate())+"/"+z(d.getMonth()+1)+"/"+d.getFullYear()+" "+z(d.getHours())+":"+z(d.getMinutes())}
+function keys(){return Object.keys(SET).filter(function(k){return aba==="pl"||(k!=="G"&&k!=="X")})}
+function podeEditar(){return !!(gh&&gh.token)}
+
+function lista(tab){return tab==="eq"?DATA.D:DATA.PL}
+function itens(tab,exc){return lista(tab).filter(function(d){return !!d.del===!!exc}).map(function(d){var c={};for(var x in d)c[x]=d[x];c.tab=tab;c.s=SET[c.s]?c.s:"P";c.t=S(c.t);c.sit=S(c.sit);c.tx=S(c.tx);c.ob=A(c.ob);return c})}
+function dset(){if(aba==="me")return mine.map(function(m){var d={};for(var x in m)d[x]=m[x];d.mine=true;d.ob=A(d.ob);return d});return itens(aba,false)}
+
+function copiar(t,btn){var ok=function(){var o=btn.textContent;btn.textContent="✅ Copiado!";setTimeout(function(){btn.textContent=o},1500)};
+function fb(){var a=document.createElement("textarea");a.value=t;document.body.appendChild(a);a.select();try{document.execCommand("copy");ok()}catch(e){}document.body.removeChild(a)}
+try{navigator.clipboard.writeText(t).then(ok,fb)}catch(e){fb()}}
+
+function tabs(){var t=document.getElementById("tabs");t.innerHTML="";
+[["eq","⭐ Equipe ("+itens("eq").length+")"],["pl","📘 Oficiais ("+itens("pl").length+")"],["me","👤 Meus ("+mine.length+")"]].forEach(function(a){var b=el("button","tab"+(aba===a[0]?" on":""),a[1]);b.onclick=function(){aba=a[0];setor="";tabs();chips();render()};t.appendChild(b)})}
+function chips(){var c=document.getElementById("chips");c.innerHTML="";
+[["","Todos"]].concat(keys().map(function(k){return[k,SET[k][1]+" "+SET[k][0]]})).forEach(function(a){var b=el("button","chip"+(setor===a[0]?" on":""),a[1]);b.onclick=function(){setor=a[0];chips();render()};c.appendChild(b)})}
+
+/* ---------- GitHub ---------- */
+function b64d(s){return decodeURIComponent(escape(atob(s.replace(/\s/g,""))))}
+function b64e(s){return btoa(unescape(encodeURIComponent(s)))}
+function api(path,opt){opt=opt||{};var h={"Accept":"application/vnd.github+json"};if(gh&&gh.token)h.Authorization="Bearer "+gh.token;if(opt.body)h["Content-Type"]="application/json";
+return fetch("https://api.github.com"+path,{method:opt.method||"GET",headers:h,body:opt.body,cache:"no-store"}).then(function(r){return r.json().catch(function(){return {}}).then(function(j){if(!r.ok){var e=new Error(j.message||("Erro "+r.status));e.status=r.status;throw e}return j})})}
+function serializa(o){function arr(a){return "[\n"+a.map(function(x){return JSON.stringify(x)}).join(",\n")+"\n]"}
+return '{"v":'+JSON.stringify(o.v||0)+',"ABERT":'+JSON.stringify(o.ABERT)+',"FECH":'+JSON.stringify(o.FECH)+',\n"D":'+arr(o.D)+',\n"PL":'+arr(o.PL)+"}\n"}
+/* lê a versão mais recente, aplica a mudança e grava; tenta de novo se alguém salvou no meio */
+function salvar(msg,muda,tent){tent=tent||0;
+return api("/repos/"+REPO+"/contents/"+ARQ+"?ref="+BRANCH+"&t="+Date.now()).then(function(f){var o=JSON.parse(b64d(f.content));var r=muda(o);if(r===false)return {abortado:true};
+o.v=Date.now();return api("/repos/"+REPO+"/contents/"+ARQ,{method:"PUT",body:JSON.stringify({message:msg+" (por "+gh.login+")",content:b64e(serializa(o)),sha:f.sha,branch:BRANCH})}).then(function(){DATA=o;lsS("cache-scripts",o);return {ok:true}})})
+.catch(function(e){if((e.status===409||e.status===422)&&tent<3)return new Promise(function(r){setTimeout(r,700)}).then(function(){return salvar(msg,muda,tent+1)});throw e})}
+function msgErro(e){var s=e&&e.status;if(s===401)return "Seu token do GitHub não vale mais. Entre de novo no modo edição.";if(s===403||s===404)return "Seu usuário do GitHub não tem permissão para alterar os scripts. Peça para ser adicionado ao repositório.";return "Não consegui salvar ("+((e&&e.message)||"erro")+"). Verifique a conexão e tente de novo."}
+function acha(o,tab,k){var a=tab==="eq"?o.D:o.PL;for(var i=0;i<a.length;i++)if(a[i].k===k)return a[i];return null}
+function snapDe(x){return {s:x.s,t:x.t,sit:x.sit||"",tx:x.tx,ob:x.ob||[],by:(x.upd&&x.upd.by)||"",at:(x.upd&&x.upd.at)||0}}
+function aplicaEdicao(x,vals){if(!x.novo&&!x.orig)x.orig={s:x.s,t:x.t,sit:x.sit||"",tx:x.tx,ob:x.ob||[]};
+var h=Array.isArray(x.hist)?x.hist:[];h.unshift(snapDe(x));x.hist=h.slice(0,6);
+x.s=vals.s;x.t=vals.t;x.sit=vals.sit;x.tx=vals.tx;x.ob=vals.ob;x.upd={by:gh.login,at:Date.now()}}
+function aviso(b,txt){var a=el("div","warn",txt);b.insertBefore(a,b.firstChild);setTimeout(function(){a.remove()},7000)}
+
+/* ---------- corpo do card ---------- */
+function corpo(d,b){var key=nk(d);b.innerHTML="";var pe=d.mine||podeEditar();
+if(d.sit){b.appendChild(el("div","lb","Situação"));b.appendChild(el("div","",d.sit))}
+if(d.upd&&d.upd.at)b.appendChild(el("div","edby",(d.novo?"Criado":"Editado")+(d.upd.by?" por "+S(d.upd.by):"")+" em "+dt(d.upd.at)));
+b.appendChild(el("div","lb","Resposta"));
+var tb=el("div","tx");var sel={};
+function comp(){var t=d.tx,a="",z="",p="";(d.cp||[]).forEach(function(c,i){if(sel[i]){if(c.at==="ini")a+=c.t+" ";else if(c.at==="p1")p+=c.t+" ";else z+=c.t+" "}});p=p.trim();if(p){var m1=t.match(/^[^.!?]*[.!?]/);if(m1)t=m1[0]+" "+p+t.slice(m1[0].length);else t=p+" "+t}z=z.trim();if(z){var m=t.match(/[^.!?]*[.!?]\s*$/);if(m)t=t.slice(0,m.index)+" "+z+m[0];else t+=" "+z}return (a+t).split("{nome}").join(meuNome())}
+tb.textContent=comp();b.appendChild(tb);
+if(d.cp&&d.cp.length){var cw=el("div","");cw.appendChild(el("div","lb","Complementos (marque para incluir na resposta)"));d.cp.forEach(function(c,i){var lb=el("label","cmp");var ck=el("input");ck.type="checkbox";ck.onchange=function(){sel[i]=ck.checked;tb.textContent=comp()};lb.appendChild(ck);lb.appendChild(el("span","",S(c.l)));cw.appendChild(lb)});b.appendChild(cw)}
+var bt=el("div","bt");var b1=el("button","b","📋 Copiar resposta");b1.onclick=function(){copiar(comp(),b1)};bt.appendChild(b1);
+if(d.s!=="X"&&d.p!=="B"){var b2=el("button","b o","📨 Copiar completo");b2.onclick=function(){copiar(full(comp()),b2)};bt.appendChild(b2);var b6=el("button","b o","⭐ Sem atraso + avaliação");b6.onclick=function(){copiar(full2(comp()),b6)};bt.appendChild(b6)}
+if(pe){var b3=el("button","b o","✏️ Editar");b3.onclick=function(){editor(d,b)};bt.appendChild(b3);
+if(!d.mine&&d.orig){var b4=el("button","b o","↩️ Restaurar original");b4.onclick=function(){if(!b4.dataset.c){b4.dataset.c=1;b4.textContent="Confirmar? Volta ao texto original para todos";return}
+b4.disabled=true;b4.textContent="Salvando...";salvar("Restaurar original "+code(d),function(o){var x=acha(o,d.tab,d.k);if(!x||!x.orig)return false;aplicaEdicao(x,{s:x.orig.s||x.s,t:x.orig.t,sit:x.orig.sit,tx:x.orig.tx,ob:x.orig.ob})}).then(function(){render()}).catch(function(e){b4.disabled=false;b4.textContent="↩️ Restaurar original";aviso(b,msgErro(e))})};bt.appendChild(b4)}
+var b5=el("button","b o","🗑️ Excluir");b5.onclick=function(){if(!b5.dataset.c){b5.dataset.c=1;b5.textContent=d.mine?"Confirmar exclusão?":"Confirmar? Some para toda a equipe";return}
+if(d.mine){mine=mine.filter(function(x){return x.id!==d.id});delete notas[key];lsS("mine-scripts",mine);lsS(KEY,notas);tabs();render();return}
+b5.disabled=true;b5.textContent="Excluindo...";salvar("Excluir "+code(d)+": "+d.t,function(o){var x=acha(o,d.tab,d.k);if(!x)return false;x.del=true;x.upd={by:gh.login,at:Date.now()}}).then(function(){tabs();render()}).catch(function(e){b5.disabled=false;b5.textContent="🗑️ Excluir";aviso(b,msgErro(e))})};bt.appendChild(b5)}
+b.appendChild(bt);
+var hs=(!d.mine&&Array.isArray(d.hist))?d.hist.filter(function(h){return h&&typeof h.tx==="string"}):[];
+if(hs.length){var hv=el("details","hist");hv.appendChild(el("summary","","🕘 Versões anteriores ("+hs.length+")"));
+hs.forEach(function(h){var it=el("div","hit");it.appendChild(el("div","edby",h.at?"Versão"+(h.by?" de "+S(h.by):"")+" em "+dt(h.at):"Texto original"));
+if(typeof h.t==="string"&&h.t!==d.t)it.appendChild(el("div","","Título: "+h.t));it.appendChild(el("div","tx sm",h.tx));
+if(pe){var ub=el("button","b o","Usar esta versão");ub.onclick=function(){ub.disabled=true;ub.textContent="Salvando...";salvar("Voltar versão "+code(d),function(o){var x=acha(o,d.tab,d.k);if(!x)return false;aplicaEdicao(x,{s:SET[h.s]?h.s:x.s,t:S(h.t)||x.t,sit:S(h.sit),tx:h.tx,ob:A(h.ob)})}).then(function(){render()}).catch(function(e){ub.disabled=false;ub.textContent="Usar esta versão";aviso(b,msgErro(e))})};it.appendChild(ub)}
+hv.appendChild(it)});b.appendChild(hv)}
+if(d.ob.length){b.appendChild(el("div","lb","Observações"));var u=el("ul","ob");d.ob.forEach(function(o){var li=el("li","",o);li.style.whiteSpace="pre-wrap";u.appendChild(li)});b.appendChild(u)}
+b.appendChild(el("div","lb","Minhas anotações (só neste navegador)"));
+var ta=el("textarea");ta.value=notas[key]||"";ta.placeholder="Escreva aqui...";ta.oninput=function(){notas[key]=ta.value;if(!ta.value)delete notas[key];lsS(KEY,notas)};b.appendChild(ta)}
+
+/* ---------- editor ---------- */
+function editor(d,b){editing++;var inicio=(d.upd&&d.upd.at)||0;b.innerHTML="";
+var f=el("div","edf");f.appendChild(el("div","lb",d.mine?"Editando seu script":"Editando: a alteração vale para toda a equipe"));
+f.appendChild(el("div","lb","Setor"));var ss=el("select");(d.tab==="pl"?Object.keys(SET):Object.keys(SET).filter(function(k){return k!=="G"&&k!=="X"})).forEach(function(k){var o=el("option","",SET[k][0]);o.value=k;ss.appendChild(o)});ss.value=d.s;f.appendChild(ss);
+f.appendChild(el("div","lb","Título"));var it=el("input");it.type="text";it.value=d.t;f.appendChild(it);
+f.appendChild(el("div","lb","Situação (opcional)"));var is=el("textarea");is.value=d.sit||"";f.appendChild(is);
+f.appendChild(el("div","lb","Resposta"));var ix=el("textarea");ix.value=d.tx;ix.style.minHeight="200px";f.appendChild(ix);
+f.appendChild(el("div","lb","Observações (uma por linha)"));var io=el("textarea");io.value=d.ob.join("\n");f.appendChild(io);
+var msg=el("div","warn");msg.style.display="none";f.appendChild(msg);
+var bt=el("div","bt");var rot=d.mine?"💾 Salvar":"💾 Salvar para todos";var sv=el("button","b",rot);var cc=el("button","b o","Cancelar");bt.appendChild(sv);bt.appendChild(cc);f.appendChild(bt);b.appendChild(f);it.focus();
+cc.onclick=function(){editing=Math.max(0,editing-1);if(pend)render();else corpo(d,b)};var forcar=false;
+sv.onclick=function(){var vals={s:ss.value,t:it.value.trim(),sit:is.value.trim(),tx:ix.value.trim(),ob:io.value.split("\n").map(function(x){return x.trim()}).filter(Boolean)};
+it.style.borderColor=vals.t?"":"var(--S)";ix.style.borderColor=vals.tx?"":"var(--S)";if(!vals.t||!vals.tx)return;
+if(d.mine){mine.forEach(function(m){if(m.id===d.id){m.s=vals.s;m.t=vals.t;m.sit=vals.sit;m.tx=vals.tx;m.ob=vals.ob}});lsS("mine-scripts",mine);editing=Math.max(0,editing-1);tabs();render();return}
+sv.disabled=true;sv.textContent="Salvando...";msg.style.display="none";var conflito=false;
+salvar("Editar "+code(d)+": "+vals.t,function(o){var x=acha(o,d.tab,d.k);if(!x)return false;var at=(x.upd&&x.upd.at)||0;if(!forcar&&at!==inicio){conflito=true;return false}aplicaEdicao(x,vals)})
+.then(function(r){if(conflito){forcar=true;sv.disabled=false;sv.textContent=rot;msg.textContent="Alguém da equipe alterou este script enquanto você editava. Clique em Salvar de novo para substituir pela sua versão, ou Cancelar para ver a versão nova.";msg.style.display="";return}
+if(r&&r.abortado){sv.disabled=false;sv.textContent=rot;msg.textContent="Este script não existe mais na versão atual (pode ter sido excluído).";msg.style.display="";return}
+editing=Math.max(0,editing-1);tabs();render()})
+.catch(function(e){sv.disabled=false;sv.textContent=rot;msg.textContent=msgErro(e);msg.style.display=""})}}
+
+/* ---------- lista ---------- */
+function snip(d,q){var t=d.tx.replace(/\s+/g," ").trim();t=t.replace(/^(Oi|Olá)[^.!?]*[.!?]\s*(Tudo bem\?\s*)?(Me chamo[^.!?]*[.!?]\s*)?/,"");if(q){var k=nz(t).indexOf(q);if(k>-1){var s=Math.max(0,k-60);return (s>0?"…":"")+t.slice(s,s+170)+"…"}}return t.slice(0,150)+(t.length>150?"…":"")}
+function render(){if(!carregado)return;if(editing){pend=true;document.getElementById("upd").style.display="";return}
+pend=false;document.getElementById("upd").style.display="none";
+var L=document.getElementById("list");L.innerHTML="";var q=nz(busca),n=0,DS=dset();
+keys().forEach(function(k){if(setor&&setor!==k)return;
+var its=DS.filter(function(d){return d.s===k&&(!q||nz(code(d)+" "+d.t+" "+(d.sit||"")+" "+d.tx+" "+d.ob.join(" ")+" "+(notas[nk(d)]||"")).indexOf(q)>-1)});
+its.sort(function(a,b){return a.n-b.n});
+if(q)its.sort(function(a,b){return (nz(a.t).indexOf(q)>-1?0:1)-(nz(b.t).indexOf(q)>-1?0:1)});
+if(!its.length&&(q||aba==="me"))return;
+var h=el("div","sec",SET[k][1]+" "+SET[k][0]+(aba==="pl"?" ("+its.length+")":""));h.style.setProperty("--c",SET[k][2]);L.appendChild(h);
+if(!its.length){L.appendChild(el("div","em","Nenhum script ainda."));return}
+its.forEach(function(d){n++;var key=nk(d);var de=el("details","card");de.style.setProperty("--c",SET[k][2]);
+var sm=el("summary");sm.appendChild(el("span","id",code(d)));var tt=el("span","tt");var tl=el("div","",d.t);if(d.upd&&d.upd.at&&Date.now()-d.upd.at<3*864e5)tl.appendChild(el("span","novo",d.novo?"novo":"atualizado"));tt.appendChild(tl);tt.appendChild(el("div","pv",snip(d,q)));sm.appendChild(tt);de.appendChild(sm);
+var b=el("div","bd");de.appendChild(b);
+de.addEventListener("toggle",function(){if(de.open){abertos[key]=1;if(!b.hasChildNodes())corpo(d,b)}else delete abertos[key]});
+if((q&&its.length===1)||abertos[key])de.open=true;L.appendChild(de)})});
+document.getElementById("cnt").textContent=n+" script"+(n===1?"":"s")+" encontrado"+(n===1?"":"s");
+if(!n)L.appendChild(el("div","em",aba==="me"&&!q?"Você ainda não adicionou scripts. Toque no ➕ lá em cima.":"Nada encontrado. Tente outra palavra."));
+if(aba!=="me"&&podeEditar()){var ex=itens(aba,true);if(ex.length){var dx=el("details","cfg exc");dx.appendChild(el("summary","","🗑️ Scripts excluídos ("+ex.length+")"));
+ex.forEach(function(d){var r=el("div","urow");r.appendChild(el("span","",code(d)+" · "+d.t));var rb=el("button","b o","Restaurar");rb.onclick=function(){rb.disabled=true;rb.textContent="...";salvar("Restaurar "+code(d)+": "+d.t,function(o){var x=acha(o,d.tab,d.k);if(!x)return false;delete x.del;x.upd={by:gh.login,at:Date.now()}}).then(function(){tabs();render()}).catch(function(e){rb.disabled=false;rb.textContent="Restaurar";aviso(dx,msgErro(e))})};r.appendChild(rb);dx.appendChild(r)});L.appendChild(dx)}}}
+document.getElementById("q").oninput=function(e){busca=e.target.value;render()};
+
+/* ---------- configurações pessoais ---------- */
+var cn=document.getElementById("cnome"),ca=document.getElementById("cab"),cf=document.getElementById("cfe"),c2=document.getElementById("cab2"),cv=document.getElementById("cav");
+function saveC(){lsS("cfg-scripts",cfg)}
+function ld(){cn.value=cfg.nome||"";ca.value=cfg.ab!=null?cfg.ab:DATA.ABERT.trim();cf.value=cfg.fe!=null?cfg.fe:DATA.FECH.trim();c2.value=cfg.ab2!=null?cfg.ab2:AB2;cv.value=cfg.av!=null?cfg.av:AVAL}
+cn.oninput=function(){cfg.nome=cn.value.trim();if(!cfg.nome)delete cfg.nome;saveC()};
+ca.oninput=function(){cfg.ab=ca.value;saveC()};cf.oninput=function(){cfg.fe=cf.value;saveC()};c2.oninput=function(){cfg.ab2=c2.value;saveC()};cv.oninput=function(){cfg.av=cv.value;saveC()};
+document.getElementById("crst").onclick=function(){cfg={};saveC();ld()};
+var DEFE={},DEFC={P:"#2563eb",F:"#16a34a",S:"#dc2626",C:"#ca8a04",L:"#ea580c",G:"#7c3aed",X:"#0d9488"};Object.keys(SET).forEach(function(k){DEFE[k]=SET[k][1]});
+function saveU(){lsS("ui-scripts",ui)}
+function applyUI(){var z=ui.z||1,r=document.documentElement;document.querySelector(".w").style.zoom=z;document.getElementById("zv").textContent=Math.round(z*100)+"%";
+if(ui.th)r.setAttribute("data-theme",ui.th);else r.removeAttribute("data-theme");
+Object.keys(SET).forEach(function(k){if(ui.co[k])r.style.setProperty("--"+k,ui.co[k]);else r.style.removeProperty("--"+k);SET[k][1]=ui.em[k]||DEFE[k]})}
+function refresh(){applyUI();chips();render()}
+function buildU(){var u=document.getElementById("usets");u.innerHTML="";Object.keys(SET).forEach(function(k){var row=el("div","urow");row.appendChild(el("span","",SET[k][0]));
+var c=el("input");c.type="color";c.value=ui.co[k]||DEFC[k];c.oninput=function(){ui.co[k]=c.value;saveU();refresh()};
+var m=el("input");m.type="text";m.maxLength=4;m.value=ui.em[k]||DEFE[k];m.oninput=function(){var v=m.value.trim();if(v)ui.em[k]=v;else delete ui.em[k];saveU();refresh()};
+row.appendChild(c);row.appendChild(m);u.appendChild(row)})}
+document.getElementById("zp").onclick=function(){ui.z=Math.min(1.8,+((ui.z||1)+0.1).toFixed(2));saveU();applyUI()};
+document.getElementById("zm").onclick=function(){ui.z=Math.max(0.8,+((ui.z||1)-0.1).toFixed(2));saveU();applyUI()};
+var uth=document.getElementById("uth");uth.value=ui.th||"";uth.onchange=function(){if(uth.value)ui.th=uth.value;else delete ui.th;saveU();applyUI()};
+document.getElementById("urst").onclick=function(){ui={co:{},em:{}};saveU();uth.value="";buildU();refresh()};
+
+/* ---------- modo edição (login GitHub) ---------- */
+function estadoLogin(){var s=document.getElementById("sync"),lg=document.getElementById("lgst"),bo=document.getElementById("lgout"),fm=document.getElementById("lgform");
+document.getElementById("edit").title=podeEditar()?"Modo edição ativo":"Entrar no modo edição";document.getElementById("edit").classList.toggle("on",podeEditar());
+if(podeEditar()){lg.textContent="✅ Modo edição ativo como @"+gh.login+". Suas alterações valem para todos.";bo.style.display="";fm.style.display="none"}
+else{lg.textContent="Para consultar e copiar os scripts não precisa entrar. Só quem vai alterar os scripts da equipe precisa do modo edição.";bo.style.display="none";fm.style.display=""}}
+var plg=document.getElementById("plg");document.getElementById("edit").onclick=function(){plg.classList.add("on")};
+document.getElementById("lcl").onclick=function(){plg.classList.remove("on")};plg.onclick=function(e){if(e.target===plg)plg.classList.remove("on")};
+document.getElementById("lgout").onclick=function(){gh=null;try{localStorage.removeItem("gh-login")}catch(e){}estadoLogin();tabs();render()};
+document.getElementById("lgok").onclick=function(){var t=document.getElementById("lgtok").value.trim(),er=document.getElementById("lgerr"),btn=this;er.textContent="";if(!t){er.textContent="Cole o token.";return}
+btn.disabled=true;btn.textContent="Verificando...";var tmp={token:t,login:""};var old=gh;gh=tmp;
+api("/user").then(function(u){tmp.login=u.login;return api("/repos/"+REPO)}).then(function(r){if(!r.permissions||!r.permissions.push){var e=new Error("sem permissão");e.status=403;throw e}
+gh=tmp;lsS("gh-login",gh);document.getElementById("lgtok").value="";plg.classList.remove("on");estadoLogin();tabs();render()})
+.catch(function(e){gh=old;er.textContent=e.status===401?"Token inválido ou expirado.":e.status===403||e.status===404?"Esse usuário do GitHub não tem permissão de escrita no repositório. Peça para ser adicionado como colaborador.":"Não consegui verificar: "+e.message}).then(function(){btn.disabled=false;btn.textContent="Entrar"})};
+
+/* novo script */
+var pnn=document.getElementById("pnn"),nset=document.getElementById("nset"),ntit=document.getElementById("ntit"),ntx=document.getElementById("ntx"),nob=document.getElementById("nob"),nonde=document.getElementById("nonde");
+Object.keys(SET).filter(function(k){return k!=="G"&&k!=="X"}).forEach(function(k){var o=el("option","",SET[k][0]);o.value=k;nset.appendChild(o)});
+function opcoesNovo(){nonde.innerHTML="";if(podeEditar()){var o1=el("option","","Equipe: todos veem");o1.value="eq";nonde.appendChild(o1)}var o2=el("option","","Meus: só neste navegador");o2.value="me";nonde.appendChild(o2)}
+document.getElementById("add").onclick=function(){opcoesNovo();document.getElementById("nerr").textContent="";pnn.classList.add("on")};
+document.getElementById("ncl").onclick=function(){pnn.classList.remove("on")};pnn.onclick=function(e){if(e.target===pnn)pnn.classList.remove("on")};
+document.getElementById("nsv").onclick=function(){var t=ntit.value.trim(),x=ntx.value.trim();ntit.style.borderColor=t?"":"var(--S)";ntx.style.borderColor=x?"":"var(--S)";if(!t||!x)return;
+var k=nset.value,ob=nob.value.split("\n").map(function(s){return s.trim()}).filter(Boolean),btn=this;
+function limpa(){ntit.value="";ntx.value="";nob.value="";pnn.classList.remove("on");setor="";tabs();chips();render()}
+if(nonde.value==="eq"){btn.disabled=true;btn.textContent="Salvando...";
+salvar("Novo script: "+t,function(o){var n=1;o.D.forEach(function(m){if(m.s===k&&m.n>=n)n=m.n+1});o.D.push({k:"eq-n-"+Date.now().toString(36)+Math.random().toString(36).slice(2,6),s:k,p:"",n:n,t:t,sit:"",tx:x,ob:ob,novo:true,upd:{by:gh.login,at:Date.now()},hist:[]})})
+.then(function(){btn.disabled=false;btn.textContent="Salvar";aba="eq";limpa()}).catch(function(e){btn.disabled=false;btn.textContent="Salvar";document.getElementById("nerr").textContent=msgErro(e)});return}
+var n2=1;mine.forEach(function(m){if(m.s===k&&m.n>=n2)n2=m.n+1});
+mine.push({id:"u"+Date.now().toString(36),s:k,n:n2,t:t,tx:x,sit:"",ob:ob});lsS("mine-scripts",mine);aba="me";limpa()};
+var pn=document.getElementById("pnl");document.getElementById("gear").onclick=function(){pn.classList.add("on")};document.getElementById("pcl").onclick=function(){pn.classList.remove("on")};pn.onclick=function(e){if(e.target===pn)pn.classList.remove("on")};
+
+/* ---------- carregar e acompanhar atualizações ---------- */
+function sync(s){var e=document.getElementById("sync");e.className="sync "+s;e.textContent=s==="ok"?"● Versão mais recente · atualiza sozinha a cada minuto":s==="wait"?"○ Carregando...":"○ Sem conexão: mostrando a última versão salva neste navegador"}
+function usa(o){if(!o||!Array.isArray(o.D)||!Array.isArray(o.PL))return false;if(carregado&&DATA.v&&o.v&&o.v<DATA.v)return false;DATA=o;lsS("cache-scripts",o);carregado=true;return true}
+function busca1(primeira){return fetch(ARQ+"?t="+Date.now(),{cache:"no-store"}).then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(o){var mudou=!carregado||o.v!==DATA.v;if(usa(o)&&mudou){if(primeira)ld();tabs();render()}sync("ok")}).catch(function(){if(!carregado){var c=lsG("cache-scripts",null);if(usa(c)){ld();tabs();render()}else document.getElementById("list").textContent="Não consegui carregar os scripts. Atualize a página."}sync("off")})}
+buildU();applyUI();chips();estadoLogin();sync("wait");
+document.getElementById("list").appendChild(el("div","em","Carregando scripts..."));
+busca1(true);
+setInterval(function(){if(!document.hidden)busca1(false)},60000);
+document.addEventListener("visibilitychange",function(){if(!document.hidden)busca1(false)});
+
+</script>
+</body>
+</html>
