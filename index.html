@@ -56,7 +56,7 @@ select{width:100%;padding:10px;border-radius:10px;border:1px solid var(--bd);bac
 .lgi{font-size:15px;color:var(--mu);padding-left:20px}.lgi li{margin:4px 0}
 .acts{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
 .act{border:1px solid var(--bd);background:var(--card);color:var(--tx);border-radius:999px;padding:8px 14px;font-size:15px;font-weight:600;cursor:pointer;white-space:nowrap}
-.act.pri{background:var(--P);border-color:var(--P);color:#fff}.act.on{background:var(--F);border-color:var(--F);color:#fff}
+.act.pri{background:var(--P);border-color:var(--P);color:var(--card)}.act.on{background:var(--F);border-color:var(--F);color:#fff}
 .help{background:var(--card);border:1px solid var(--P);border-radius:12px;padding:14px 16px;margin:8px 0;font-size:16px}.help ol{margin:8px 0 12px;padding-left:22px}.help li{margin:4px 0}
 .edbar{background:color-mix(in srgb,var(--F) 14%,var(--card));border:1px solid var(--F);border-radius:10px;padding:8px 12px;margin:6px 0;font-size:15px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 .edbar button{border:1px solid var(--bd);background:var(--card);color:var(--tx);border-radius:8px;padding:4px 10px;cursor:pointer;font-size:14px}
@@ -69,7 +69,7 @@ select{width:100%;padding:10px;border-radius:10px;border:1px solid var(--bd);bac
 </head>
 <body>
 <div class="w">
-<div class="hd"><h1>📚 Scripts backoffice</h1><span class="acts"><button class="act pri" id="sug" title="Mandar um script novo para o supervisor analisar">💡 Sugerir script</button><button class="act" id="add" title="Criar um script novo">➕ Novo</button><button class="act" id="edit" title="Entrar para editar os scripts (só editores)">🔑 Entrar</button><button class="act" id="gear" title="Assinatura, tamanho da letra e tema">⚙️ Ajustes</button><button class="act" id="ajd" title="Como usar a página">❓</button></span></div>
+<div class="hd"><h1>📚 Scripts backoffice</h1><span class="acts"><button class="act pri" id="sug" title="Mandar um script novo para o supervisor analisar">💡 Sugerir script</button><button class="act" id="add" title="Criar um script novo">➕ Novo</button><button class="act" id="edit" title="Entrar para editar os scripts (só editores)">🔑 Entrar</button><button class="act" id="gear" title="Assinatura, tamanho da letra e tema">⚙️ Ajustes</button><button class="act" id="tema" title="Trocar entre tema claro e escuro">🌙 Escuro</button><button class="act" id="ajd" title="Como usar a página">❓</button></span></div>
 <div class="sync" id="sync"></div>
 <div class="help" id="help" style="display:none"><b>Como usar</b><ol><li><b>Ache o script:</b> digite na busca (ex.: boleto, SUB) ou escolha o setor.</li><li><b>Abra o script</b> clicando nele e use os botões <b>Copiar</b>. A versão <b>completa</b> já vem com saudação e a sua assinatura (coloque seu nome em ⚙️ Ajustes).</li><li><b>Não achou?</b> Clique em <b>💡 Sugerir script</b> e mande a ocorrência e a resposta. O supervisor analisa.</li></ol><button class="b" id="helpok" style="background:var(--P)">Entendi</button></div>
 <div class="edbar" id="edbar" style="display:none"></div>
@@ -260,8 +260,11 @@ document.getElementById("crst").onclick=function(){cfg={};saveC();ld()};
 var DEFE={},DEFC={P:"#2563eb",F:"#16a34a",S:"#dc2626",C:"#ca8a04",L:"#ea580c",G:"#7c3aed",X:"#0d9488"};Object.keys(SET).forEach(function(k){DEFE[k]=SET[k][1]});
 function saveU(){lsS("ui-scripts",ui)}
 function applyUI(){var z=ui.z||1,r=document.documentElement;document.querySelector(".w").style.zoom=z;document.getElementById("zv").textContent=Math.round(z*100)+"%";
-if(ui.th)r.setAttribute("data-theme",ui.th);else r.removeAttribute("data-theme");
+if(ui.th)r.setAttribute("data-theme",ui.th);else r.removeAttribute("data-theme");rotTema();
 Object.keys(SET).forEach(function(k){if(ui.co[k])r.style.setProperty("--"+k,ui.co[k]);else r.style.removeProperty("--"+k);SET[k][1]=ui.em[k]||DEFE[k]})}
+function escuro(){return ui.th?ui.th==="dark":(window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches)}
+function rotTema(){var t=document.getElementById("tema");if(t)t.textContent=escuro()?"☀️ Claro":"🌙 Escuro"}
+document.getElementById("tema").onclick=function(){ui.th=escuro()?"light":"dark";saveU();applyUI();var u=document.getElementById("uth");if(u)u.value=ui.th};
 function refresh(){applyUI();chips();render()}
 function buildU(){var u=document.getElementById("usets");u.innerHTML="";Object.keys(SET).forEach(function(k){var row=el("div","urow");row.appendChild(el("span","",SET[k][0]));
 var c=el("input");c.type="color";c.value=ui.co[k]||DEFC[k];c.oninput=function(){ui.co[k]=c.value;saveU();refresh()};
