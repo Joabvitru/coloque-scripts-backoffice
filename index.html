@@ -93,8 +93,8 @@ select{width:100%;padding:10px;border-radius:10px;border:1px solid var(--bd);bac
 <details class="mdet"><summary>Cores e emojis dos setores</summary><div id="usets"></div><div class="bt"><button class="b o" id="urst">Voltar à aparência padrão</button></div></details></div>
 <div class="msec" data-s="edi"><p class="mi">Só para quem vai <b>alterar</b> os scripts (supervisor e editores). Para consultar e copiar, não precisa entrar.</p><div class="cnt" id="lgst"></div><button class="b o" id="lgout" style="display:none">Sair do modo edição</button><div id="lgform"><div class="lb">Como entrar (só na primeira vez neste navegador)</div><ol class="lgi"><li>Você precisa ter conta no GitHub e ter sido convidado(a) pelo supervisor como colaborador(a).</li><li><a href="https://github.com/settings/tokens/new?scopes=public_repo&amp;description=Scripts%20backoffice" target="_blank" rel="noopener"><b>Clique aqui para abrir o GitHub</b></a> já com a opção certa marcada.</li><li>Lá, escolha a validade em <b>Expiration</b>, desça até o fim e clique em <b>Generate token</b>.</li><li>Copie o código que aparece (começa com <b>ghp_</b>) e cole aqui embaixo.</li></ol><div class="lb">Token do GitHub</div><input type="text" id="lgtok" autocomplete="off" placeholder="ghp_..."><div class="cnt" id="lgerr" style="color:var(--S)"></div><div class="bt"><button class="b" id="lgok" style="background:var(--P)">Entrar</button></div><p class="cnt">O token fica guardado só neste navegador. Não use o modo edição em computador compartilhado.</p></div></div>
 <div class="msec" data-s="aju"><div class="lb">Como usar</div><ol class="lgi"><li><b>Ache o script:</b> digite na busca (ex.: boleto, SUB) ou escolha o setor.</li><li><b>Abra o script</b> clicando nele e use os botões <b>Copiar</b>.</li><li><b>Não achou?</b> Clique em <b>💡 Sugerir script</b>. O supervisor analisa.</li></ol>
-<div class="lb">As abas</div><ul class="lgi"><li><b>📘 Oficiais:</b> scripts aprovados pelo supervisor.</li><li><b>⭐ Equipe:</b> scripts criados pela equipe. Os melhores viram oficiais.</li><li><b>👤 Meus:</b> seus rascunhos, só neste navegador.</li></ul>
-<div class="lb">O que fica salvo onde</div><p class="mi">Os scripts Oficiais e da Equipe são de todos: o que alguém altera aparece para todos. Seu nome, aparência, anotações e a aba Meus ficam salvos só neste navegador.</p>
+<div class="lb">As abas</div><ul class="lgi"><li><b>⭐ Equipe:</b> scripts aprovados pelo supervisor.</li><li><b>👤 Meus:</b> seus rascunhos, só neste navegador.</li></ul>
+<div class="lb">O que fica salvo onde</div><p class="mi">Os scripts da Equipe são de todos: o que alguém altera aparece para todos. Seu nome, aparência, anotações e a aba Meus ficam salvos só neste navegador.</p>
 <div class="bt"><button class="b o" id="helpshow">Mostrar o guia rápido na página</button></div></div>
 </div></div>
 <div class="pnl" id="pnn"><div class="pbox"><div class="ph"><b>➕ Novo script</b><button class="b o" id="ncl">✕</button></div><div class="lb">Salvar em</div><select id="nonde"></select><div class="lb">Setor</div><select id="nset"></select><div class="lb">Título</div><input type="text" id="ntit"><div class="lb">Ocorrência (o que aconteceu com o aluno)</div><textarea id="nsit" placeholder="Ex.: aluno não consegue agendar a SUB porque..."></textarea><div class="lb">Resposta</div><textarea id="ntx" style="min-height:170px"></textarea><div class="lb">Observações (opcional, uma por linha)</div><textarea id="nob"></textarea><div class="cnt" id="nerr" style="color:var(--S)"></div><div class="bt"><button class="b" id="nsv" style="background:var(--P)">Salvar</button></div></div></div>
@@ -112,7 +112,7 @@ select{width:100%;padding:10px;border-radius:10px;border:1px solid var(--bd);bac
 <script>
 /* ====== CONFIGURAÇÃO ====== */
 var REPO="Joabvitru/coloque-scripts-backoffice",BRANCH="main",ARQ="scripts.json";
-/* usuários do GitHub que aprovam scripts e editam os Oficiais */
+/* usuários do GitHub que aprovam scripts e editam a aba Equipe */
 var APROVADORES=["joabvitru"];
 /* caixa de sugestões (Formulário Google + planilha publicada em CSV) */
 var FORM="https://docs.google.com/forms/d/e/1FAIpQLSfCccAsHbXc0BCERra7CfrAEb6FQmzg9_LVBBqBATZRc-eUSw/formResponse";
@@ -155,8 +155,8 @@ function copiar(t,btn){var ok=function(){var o=btn.textContent;btn.textContent="
 function fb(){var a=document.createElement("textarea");a.value=t;document.body.appendChild(a);a.select();try{document.execCommand("copy");ok()}catch(e){}document.body.removeChild(a)}
 try{navigator.clipboard.writeText(t).then(ok,fb)}catch(e){fb()}}
 
-function tabs(){var t=document.getElementById("tabs");t.innerHTML="";var TH={eq:"Scripts criados pela equipe. O supervisor analisa e os melhores viram oficiais.",pl:"Scripts oficiais, aprovados pelo supervisor.",me:"Seus rascunhos. Ficam salvos só neste navegador.",sg:"Sugestões enviadas pelo botão 💡. Só quem aprova vê esta aba."};document.getElementById("thint").textContent=TH[aba]||"";
-[["pl","📘 Oficiais ("+itens("pl").length+")"],["eq","⭐ Equipe ("+itens("eq").length+")"],["me","👤 Meus ("+mine.length+")"]].concat(isAprov()?[["sg","📥 Sugestões ("+pendentes().length+")"]]:[]).forEach(function(a){var b=el("button","tab"+(aba===a[0]?" on":""),a[1]);b.onclick=function(){aba=a[0];setor="";tabs();chips();render()};t.appendChild(b)})}
+function tabs(){var t=document.getElementById("tabs");t.innerHTML="";var TH={eq:"Scripts criados pela equipe. O supervisor analisa e os melhores viram oficiais.",pl:"Scripts da equipe, aprovados pelo supervisor.",me:"Seus rascunhos. Ficam salvos só neste navegador.",sg:"Sugestões enviadas pelo botão 💡. Só quem aprova vê esta aba."};document.getElementById("thint").textContent=TH[aba]||"";
+[["pl","⭐ Equipe ("+itens("pl").length+")"],["me","👤 Meus ("+mine.length+")"]].concat(isAprov()?[["sg","📥 Sugestões ("+pendentes().length+")"]]:[]).forEach(function(a){var b=el("button","tab"+(aba===a[0]?" on":""),a[1]);b.onclick=function(){aba=a[0];setor="";tabs();chips();render()};t.appendChild(b)})}
 function chips(){var c=document.getElementById("chips");c.innerHTML="";c.style.display=aba==="sg"?"none":"";
 [["","Todos"]].concat(keys().map(function(k){return[k,SET[k][1]+" "+SET[k][0]]})).forEach(function(a){var b=el("button","chip"+(setor===a[0]?" on":""),a[1]);b.onclick=function(){setor=a[0];chips();render()};c.appendChild(b)})}
 
@@ -182,12 +182,12 @@ function aviso(b,txt){var a=el("div","warn",txt);b.insertBefore(a,b.firstChild);
 
 function proxN(L,s){var n=1;L.forEach(function(m){if(m.s===s&&!m.p&&m.n>=n)n=m.n+1});return n}
 function novoK(tab){return tab+"-n-"+Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
-/* botões de fluxo: Meus -> Equipe -> Oficiais */
+/* botões de fluxo: Meus -> Equipe (aprovador) ou sugestão ao supervisor */
 function extras(d,b,bt){
 if(d.mine){
- if(podeEditar()){var bm=el("button","b o","📤 Enviar para a Equipe");bm.onclick=function(){if(!bm.dataset.c){bm.dataset.c=1;bm.textContent="Confirmar? Todos vão ver e o supervisor analisa";return}
-  bm.disabled=true;bm.textContent="Enviando...";salvar("Novo script (da aba Meus): "+d.t,function(o){o.D.push({k:novoK("eq"),s:d.s,p:"",n:proxN(o.D,d.s),t:d.t,sit:d.sit||"",tx:d.tx,ob:d.ob||[],novo:true,upd:{by:gh.login,at:Date.now()},hist:[]})})
-  .then(function(){mine=mine.filter(function(x){return x.id!==d.id});lsS("mine-scripts",mine);aba="eq";tabs();chips();render()}).catch(function(e){bm.disabled=false;bm.textContent="📤 Enviar para a Equipe";aviso(b,msgErro(e))})};bt.appendChild(bm)}
+ if(isAprov()){var bm=el("button","b o","📤 Enviar para a Equipe");bm.onclick=function(){if(!bm.dataset.c){bm.dataset.c=1;bm.textContent="Confirmar? Todos vão ver";return}
+  bm.disabled=true;bm.textContent="Enviando...";salvar("Novo script (da aba Meus): "+d.t,function(o){o.PL.push({k:novoK("pl"),s:d.s,p:"",n:proxN(o.PL,d.s),t:d.t,sit:d.sit||"",tx:d.tx,ob:d.ob||[],novo:true,upd:{by:gh.login,at:Date.now()},hist:[]})})
+  .then(function(){mine=mine.filter(function(x){return x.id!==d.id});lsS("mine-scripts",mine);aba="pl";tabs();chips();render()}).catch(function(e){bm.disabled=false;bm.textContent="📤 Enviar para a Equipe";aviso(b,msgErro(e))})};bt.appendChild(bm)}
  else{var bs=el("button","b o","💡 Enviar como sugestão ao supervisor");bs.onclick=function(){abrirSug({setor:SET[d.s][0],titulo:d.t,oc:d.sit||"",resp:d.tx,obs:(d.ob||[]).join("\n")})};bt.appendChild(bs)}
  return}
 if(d.tab==="eq"&&isAprov()){var bp=el("button","b o","⬆️ Enviar para Oficiais");bp.onclick=function(){if(b.querySelector(".prom"))return;
@@ -254,7 +254,7 @@ editing=Math.max(0,editing-1);tabs();render()})
 /* ---------- lista ---------- */
 function snip(d,q){var t=d.tx.replace(/\s+/g," ").trim();t=t.replace(/^(Oi|Olá)[^.!?]*[.!?]\s*(Tudo bem\?\s*)?(Me chamo[^.!?]*[.!?]\s*)?/,"");if(q){var k=nz(t).indexOf(q);if(k>-1){var s=Math.max(0,k-60);return (s>0?"…":"")+t.slice(s,s+170)+"…"}}return t.slice(0,150)+(t.length>150?"…":"")}
 function render(){if(!carregado)return;if(editing){pend=true;document.getElementById("upd").style.display="";return}
-pend=false;document.getElementById("upd").style.display="none";if(aba==="sg"&&!isAprov())aba="eq";if(aba==="sg"){renderSug();return}
+pend=false;document.getElementById("upd").style.display="none";if(aba==="sg"&&!isAprov())aba="pl";if(aba==="sg"){renderSug();return}
 var L=document.getElementById("list");L.innerHTML="";var q=nz(busca),n=0,DS=dset();
 keys().forEach(function(k){if(setor&&setor!==k)return;
 var its=DS.filter(function(d){return d.s===k&&(!q||nz(code(d)+" "+d.t+" "+(d.sit||"")+" "+d.tx+" "+d.ob.join(" ")+" "+(notas[nk(d)]||"")).indexOf(q)>-1)});
@@ -316,7 +316,7 @@ gh=tmp;lsS("gh-login",gh);document.getElementById("lgtok").value="";document.get
 /* novo script */
 var pnn=document.getElementById("pnn"),nset=document.getElementById("nset"),ntit=document.getElementById("ntit"),ntx=document.getElementById("ntx"),nob=document.getElementById("nob"),nsit=document.getElementById("nsit"),nonde=document.getElementById("nonde");
 Object.keys(SET).filter(function(k){return k!=="G"&&k!=="X"}).forEach(function(k){var o=el("option","",SET[k][0]);o.value=k;nset.appendChild(o)});
-function opcoesNovo(){nonde.innerHTML="";if(podeEditar()){var o1=el("option","","Equipe: todos veem (o supervisor analisa)");o1.value="eq";nonde.appendChild(o1)}if(isAprov()){var o3=el("option","","Oficiais: script oficial");o3.value="pl";nonde.appendChild(o3)}var o2=el("option","","Meus: só neste navegador");o2.value="me";nonde.appendChild(o2)}
+function opcoesNovo(){nonde.innerHTML="";if(isAprov()){var o3=el("option","","Equipe: todos veem");o3.value="pl";nonde.appendChild(o3)}var o2=el("option","","Meus: só neste navegador");o2.value="me";nonde.appendChild(o2)}
 document.getElementById("add").onclick=function(){opcoesNovo();document.getElementById("nerr").textContent="";pnn.classList.add("on")};
 document.getElementById("ncl").onclick=function(){pnn.classList.remove("on")};pnn.onclick=function(e){if(e.target===pnn)pnn.classList.remove("on")};
 document.getElementById("nsv").onclick=function(){var t=ntit.value.trim(),x=ntx.value.trim();ntit.style.borderColor=t?"":"var(--S)";ntx.style.borderColor=x?"":"var(--S)";if(!t||!x)return;
@@ -324,7 +324,7 @@ var k=nset.value,ob=nob.value.split("\n").map(function(s){return s.trim()}).filt
 var sit=nsit.value.trim();
 function limpa(){ntit.value="";ntx.value="";nob.value="";nsit.value="";pnn.classList.remove("on");setor="";tabs();chips();render()}
 if(nonde.value==="eq"||nonde.value==="pl"){var dest=nonde.value;btn.disabled=true;btn.textContent="Salvando...";
-salvar("Novo script"+(dest==="pl"?" oficial":"")+": "+t,function(o){var L=dest==="pl"?o.PL:o.D;L.push({k:dest+"-n-"+Date.now().toString(36)+Math.random().toString(36).slice(2,6),s:k,p:"",n:proxN(L,k),t:t,sit:sit,tx:x,ob:ob,novo:true,upd:{by:gh.login,at:Date.now()},hist:[]})})
+salvar("Novo script (Equipe): "+t,function(o){var L=dest==="pl"?o.PL:o.D;L.push({k:dest+"-n-"+Date.now().toString(36)+Math.random().toString(36).slice(2,6),s:k,p:"",n:proxN(L,k),t:t,sit:sit,tx:x,ob:ob,novo:true,upd:{by:gh.login,at:Date.now()},hist:[]})})
 .then(function(){btn.disabled=false;btn.textContent="Salvar";aba=dest;limpa()}).catch(function(e){btn.disabled=false;btn.textContent="Salvar";document.getElementById("nerr").textContent=msgErro(e)});return}
 var n2=1;mine.forEach(function(m){if(m.s===k&&m.n>=n2)n2=m.n+1});
 mine.push({id:"u"+Date.now().toString(36),s:k,n:n2,t:t,tx:x,sit:sit,ob:ob});lsS("mine-scripts",mine);aba="me";limpa()};
@@ -359,14 +359,14 @@ b.appendChild(el("div","lb","Ocorrência"));var io=el("textarea");io.value=x.oc;
 b.appendChild(el("div","lb","Resposta"));var ir=el("textarea");ir.value=x.tx;ir.style.minHeight="160px";b.appendChild(ir);
 if(x.obs){b.appendChild(el("div","lb","Observações"));b.appendChild(el("div","",x.obs))}
 b.appendChild(el("div","lb","Setor"));var ss=el("select");Object.keys(SET).forEach(function(k){var o=el("option","",SET[k][0]);o.value=k;ss.appendChild(o)});ss.value=setorDe(x.setor);b.appendChild(ss);
-var bt=el("div","bt");var be=el("button","b","➕ Adicionar à Equipe");be.style.background="var(--P)";var bp=el("button","b","📘 Adicionar aos Oficiais");bp.style.background="var(--F)";var bd=el("button","b o","Descartar");bt.appendChild(be);bt.appendChild(bp);bt.appendChild(bd);b.appendChild(bt);
+var bt=el("div","bt");var be=el("button","b","➕ Adicionar à Equipe");be.style.background="var(--P)";var bp=el("button","b","⭐ Adicionar à Equipe");bp.style.background="var(--F)";var bd=el("button","b o","Descartar");bt.appendChild(bp);bt.appendChild(bd);b.appendChild(bt);
 function faz(st,btn){var t=it.value.trim(),tx=ir.value.trim();if(st!=="desc"&&(!t||!tx)){aviso(b,"Preencha o título e a resposta antes de adicionar.");return}
 if(st==="desc"&&!btn.dataset.c){btn.dataset.c=1;btn.textContent="Confirmar descarte?";return}
 [be,bp,bd].forEach(function(z){z.disabled=true});btn.textContent="Salvando...";var k=ss.value;if(st==="eq"&&(k==="G"||k==="X"))k="P";
-salvar((st==="desc"?"Descartar sugestão: ":st==="pl"?"Sugestão aprovada (Oficiais): ":"Sugestão aprovada (Equipe): ")+(t||x.t),function(o){o.sug=o.sug||{};if(o.sug[x.id])return false;o.sug[x.id]={st:st,by:gh.login,at:Date.now()};
+salvar((st==="desc"?"Descartar sugestão: ":st==="pl"?"Sugestão aprovada (Equipe): ":"Sugestão aprovada (Equipe): ")+(t||x.t),function(o){o.sug=o.sug||{};if(o.sug[x.id])return false;o.sug[x.id]={st:st,by:gh.login,at:Date.now()};
 if(st!=="desc"){var Lst=st==="pl"?o.PL:o.D;var ob=x.obs?x.obs.split("\n").map(function(z){return z.trim()}).filter(Boolean):[];ob.push("Sugerido"+(x.nome?" por "+x.nome:"")+" pela caixa de sugestões.");
 Lst.push({k:novoK(st),s:k,p:"",n:proxN(Lst,k),t:t,sit:io.value.trim(),tx:tx,ob:ob,novo:true,upd:{by:gh.login,at:Date.now()},hist:[]})}})
-.then(function(r){if(r&&r.abortado){DATA.sug=DATA.sug||{};DATA.sug[x.id]=1}tabs();render()}).catch(function(e){[be,bp,bd].forEach(function(z){z.disabled=false});be.textContent="➕ Adicionar à Equipe";bp.textContent="📘 Adicionar aos Oficiais";bd.textContent="Descartar";aviso(b,msgErro(e))})}
+.then(function(r){if(r&&r.abortado){DATA.sug=DATA.sug||{};DATA.sug[x.id]=1}tabs();render()}).catch(function(e){[be,bp,bd].forEach(function(z){z.disabled=false});be.textContent="➕ Adicionar à Equipe";bp.textContent="⭐ Adicionar à Equipe";bd.textContent="Descartar";aviso(b,msgErro(e))})}
 be.onclick=function(){faz("eq",be)};bp.onclick=function(){faz("pl",bp)};bd.onclick=function(){faz("desc",bd)};L.appendChild(c)});
 var feitas=SUG.filter(function(x){return h[x.id]});if(feitas.length)L.appendChild(el("p","cnt",feitas.length+" sugest"+(feitas.length===1?"ão já analisada":"ões já analisadas")+"."))}
 /* painel de envio (qualquer pessoa) */
