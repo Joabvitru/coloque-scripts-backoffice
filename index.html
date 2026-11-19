@@ -111,6 +111,7 @@ body:after{content:"BACKOFFICE";position:fixed;left:50%;top:58%;transform:transl
 <div class="sync" id="sync"></div>
 <div class="help" id="help" style="display:none"><b>Como usar</b><ol><li><b>Ache o script:</b> digite na busca (ex.: boleto, SUB) ou escolha o setor.</li><li><b>Abra o script</b> clicando nele e use os botões <b>Copiar</b>. A versão <b>completa</b> já vem com saudação e a sua assinatura (coloque seu nome em ☰ Menu).</li><li><b>Não achou?</b> Clique em <b>💡 Sugerir script</b> e mande a ocorrência e a resposta. O supervisor analisa.</li></ol><div class="bt" style="align-items:center"><button class="b" id="helpok" style="background:var(--P)">Fechar</button><label class="cmp" style="margin:0;font-size:14px;color:var(--mu)"><input type="checkbox" id="helpnao">Não mostrar mais ao abrir a página</label></div></div>
 <div class="edbar" id="edbar" style="display:none"></div>
+<div class="warn" id="novav" style="display:none;align-items:center;gap:10px;flex-wrap:wrap">🔄 Saiu uma versão nova da página. <button class="b" id="novavb" style="background:var(--P)">Atualizar agora</button></div>
 <div class="pnl" id="pnl"><div class="pbox mbox"><div class="ph"><b>☰ Menu</b><button class="b o" id="pcl">✕</button></div>
 <div class="mtabs"><button class="mt" data-t="ass">✍️ Assinatura</button><button class="mt" data-t="apa">🎨 Aparência</button><button class="mt" data-t="edi">🔑 Modo edição</button><button class="mt" data-t="aju">❓ Ajuda</button></div>
 <div class="msec" data-s="ass"><p class="mi">Seu nome aparece na assinatura quando você usa os botões <b>Completa</b> de um script.</p><div class="lb">Seu nome</div><input type="text" id="cnome" placeholder="Seu nome">
@@ -143,6 +144,7 @@ body:after{content:"BACKOFFICE";position:fixed;left:50%;top:58%;transform:transl
 </div>
 <script>
 /* ====== CONFIGURAÇÃO ====== */
+var BUILD="1795096382"; /* muda a cada publicação da página */
 var REPO="Joabvitru/coloque-scripts-backoffice",BRANCH="main",ARQ="scripts.json";
 /* usuários do GitHub que aprovam scripts e editam a aba Equipe */
 var APROVADORES=["joabvitru"];
@@ -198,7 +200,7 @@ function lista(tab){return tab==="eq"?DATA.D:DATA.PL}
 function itens(tab,exc){return lista(tab).filter(function(d){return !!d.del===!!exc}).map(function(d){var c={};for(var x in d)c[x]=d[x];c.tab=tab;c.s=SET[c.s]?c.s:"P";c.t=S(c.t);c.sit=S(c.sit);c.tx=S(c.tx);c.ob=A(c.ob);return c})}
 function dset(){if(aba==="me")return mine.map(function(m){var d={};for(var x in m)d[x]=m[x];d.mine=true;d.ob=A(d.ob);return d});return itens(aba,false)}
 
-function copiar(t,btn){var ok=function(){var o=btn.textContent;btn.textContent="✅ Copiado!";setTimeout(function(){btn.textContent=o},1500)};
+function copiar(t,btn){t=String(t).replace(/[ \t]*\[caixinha:[^\]]*\]/gi,"").replace(/\n{3,}/g,"\n\n");var ok=function(){var o=btn.textContent;btn.textContent="✅ Copiado!";setTimeout(function(){btn.textContent=o},1500)};
 function fb(){var a=document.createElement("textarea");a.value=t;document.body.appendChild(a);a.select();try{document.execCommand("copy");ok()}catch(e){}document.body.removeChild(a)}
 try{navigator.clipboard.writeText(t).then(ok,fb)}catch(e){fb()}}
 
@@ -456,7 +458,9 @@ function busca1(primeira){return fetch(ARQ+"?t="+Date.now(),{cache:"no-store"}).
 buildU();applyUI();chips();estadoLogin();sync("wait");
 document.getElementById("list").appendChild(el("div","em","Carregando scripts..."));
 busca1(true);
-setInterval(function(){if(!document.hidden)busca1(false);carregaSug()},60000);carregaSug();
+function confereVersao(){fetch("index.html?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():""}).then(function(h){var m=h.match(/var BUILD="(\d+)"/);if(m&&m[1]!==BUILD)document.getElementById("novav").style.display="flex"}).catch(function(){})}
+document.getElementById("novavb").onclick=function(){location.reload()};
+setInterval(function(){if(!document.hidden){busca1(false);confereVersao()}carregaSug()},60000);carregaSug();
 document.addEventListener("visibilitychange",function(){if(!document.hidden)busca1(false)});
 
 </script>
