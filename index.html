@@ -202,8 +202,8 @@ function copiar(t,btn){var ok=function(){var o=btn.textContent;btn.textContent="
 function fb(){var a=document.createElement("textarea");a.value=t;document.body.appendChild(a);a.select();try{document.execCommand("copy");ok()}catch(e){}document.body.removeChild(a)}
 try{navigator.clipboard.writeText(t).then(ok,fb)}catch(e){fb()}}
 
-function tabs(){var t=document.getElementById("tabs");t.innerHTML="";var TH={eq:"Scripts criados pela equipe. O supervisor analisa e os melhores viram oficiais.",pl:"Scripts da equipe, aprovados pelo supervisor.",me:"Seus rascunhos. Ficam salvos só neste navegador.",sg:"Sugestões enviadas pelo botão 💡. Só quem aprova vê esta aba."};document.getElementById("thint").textContent=TH[aba]||"";
-[["pl","⭐ Equipe ("+itens("pl").length+")"],["me","👤 Meus ("+mine.length+")"]].concat(isAprov()?[["sg","📥 Sugestões ("+pendentes().length+")"]]:[]).forEach(function(a){var b=el("button","tab"+(aba===a[0]?" on":""),a[1]);b.onclick=function(){aba=a[0];setor="";tabs();chips();render()};t.appendChild(b)})}
+function tabs(){var t=document.getElementById("tabs");t.innerHTML="";var TH={eq:"Só quem aprova vê esta aba. Aqui ficam scripts em preparação: ajuste e envie para a Equipe quando estiverem prontos.",pl:"Scripts da equipe, aprovados pelo supervisor.",me:"Seus rascunhos. Ficam salvos só neste navegador.",sg:"Sugestões enviadas pelo botão 💡. Só quem aprova vê esta aba."};document.getElementById("thint").textContent=TH[aba]||"";
+[["pl","⭐ Equipe ("+itens("pl").length+")"],["me","👤 Meus ("+mine.length+")"]].concat(isAprov()?[["eq","🧪 Equipe 2 ("+itens("eq").length+")"],["sg","📥 Sugestões ("+pendentes().length+")"]]:[]).forEach(function(a){var b=el("button","tab"+(aba===a[0]?" on":""),a[1]);b.onclick=function(){aba=a[0];setor="";tabs();chips();render()};t.appendChild(b)})}
 function chips(){var c=document.getElementById("chips");c.innerHTML="";c.style.display=aba==="sg"?"none":"";
 [["","Todos"]].concat(keys().map(function(k){return[k,SET[k][1]+" "+SET[k][0]]})).forEach(function(a){var b=el("button","chip"+(setor===a[0]?" on":""),a[1]);b.onclick=function(){setor=a[0];chips();render()};c.appendChild(b)})}
 
@@ -237,14 +237,19 @@ if(d.mine){
   .then(function(){mine=mine.filter(function(x){return x.id!==d.id});lsS("mine-scripts",mine);aba="pl";tabs();chips();render()}).catch(function(e){bm.disabled=false;bm.textContent="📤 Enviar para a Equipe";aviso(b,msgErro(e))})};bt.appendChild(bm)}
  else{var bs=el("button","b o","💡 Enviar como sugestão ao supervisor");bs.onclick=function(){abrirSug({setor:SET[d.s][0],titulo:d.t,oc:d.sit||"",resp:d.tx,obs:(d.ob||[]).join("\n")})};bt.appendChild(bs)}
  return}
-if(d.tab==="eq"&&isAprov()){var bp=el("button","b o","⬆️ Enviar para Oficiais");bp.onclick=function(){if(b.querySelector(".prom"))return;
- var f=el("div","warn prom");f.appendChild(el("div","","Este script vai sair da aba Equipe e virar um script oficial. Em qual setor ele fica nos Oficiais?"));
+if(d.tab==="eq"&&d.nota){var nt=el("div","warn",S(d.nota));b.insertBefore(nt,b.firstChild)}
+if(d.tab==="eq"&&isAprov()&&d.ref){var br=el("button","b","✅ Substituir na Equipe");br.style.background="var(--F)";br.title="Troca o script original da aba Equipe por esta versão";br.onclick=function(){if(!br.dataset.c){br.dataset.c=1;br.textContent="Confirmar? O "+code(d)+" da Equipe passa a ser este";return}
+ br.disabled=true;br.textContent="Enviando...";salvar("Substituir "+code(d)+" na Equipe (versão da Equipe 2): "+d.t,function(o){var i=-1;o.D.forEach(function(x,j){if(x.k===d.k)i=j});if(i<0)return false;var x=o.D[i];var y=acha(o,"pl",d.ref);if(!y)return false;
+  aplicaEdicao(y,{s:y.s,t:x.t,sit:x.sit||"",tx:x.tx,ob:x.ob||[],cp:Array.isArray(x.cp)?x.cp:[]});o.D.splice(i,1)})
+ .then(function(r){if(r&&r.abortado){aviso(b,"Não achei o script original na Equipe (pode ter sido excluído). Use Enviar como novo.");br.disabled=false;br.textContent="✅ Substituir na Equipe";return}aba="pl";setor="";tabs();chips();render()}).catch(function(e){br.disabled=false;br.textContent="✅ Substituir na Equipe";aviso(b,msgErro(e))})};bt.appendChild(br)}
+if(d.tab==="eq"&&isAprov()){var bp=el("button","b o",d.ref?"⬆️ Enviar como script novo":"✅ Enviar para a Equipe");bp.onclick=function(){if(b.querySelector(".prom"))return;
+ var f=el("div","warn prom");f.appendChild(el("div","","Este script vai sair da Equipe 2 e entrar na aba Equipe, para todos verem. Em qual setor ele fica?"));
  var ss=el("select");Object.keys(SET).forEach(function(k){var o=el("option","",SET[k][0]);o.value=k;ss.appendChild(o)});ss.value=d.s;f.appendChild(ss);
  var r=el("div","bt");var ok=el("button","b","Confirmar");ok.style.background="var(--F)";var no=el("button","b o","Cancelar");r.appendChild(ok);r.appendChild(no);f.appendChild(r);bt.parentNode.insertBefore(f,bt.nextSibling);
  no.onclick=function(){f.remove()};
  ok.onclick=function(){ok.disabled=true;ok.textContent="Enviando...";var s2=ss.value,code0=code(d);
-  salvar("Promover "+code0+" para Oficiais: "+d.t,function(o){var i=-1;o.D.forEach(function(x,j){if(x.k===d.k)i=j});if(i<0)return false;var x=o.D.splice(i,1)[0];
-   var h=Array.isArray(x.hist)?x.hist:[];var ob=(x.ob||[]).slice();ob.push("Promovido da aba Equipe ("+code0+")"+(x.upd&&x.upd.by?", criado por "+x.upd.by:"")+".");
+  salvar("Enviar "+code0+" da Equipe 2 para a Equipe: "+d.t,function(o){var i=-1;o.D.forEach(function(x,j){if(x.k===d.k)i=j});if(i<0)return false;var x=o.D.splice(i,1)[0];
+   var h=Array.isArray(x.hist)?x.hist:[];var ob=(x.ob||[]).slice();if(!x.ref&&!x.grp)ob.push("Veio da Equipe 2 ("+code0+")"+(x.upd&&x.upd.by?", criado por "+x.upd.by:"")+".");
    o.PL.push({k:novoK("pl"),s:s2,p:"",n:proxN(o.PL,s2),t:x.t,sit:x.sit||"",tx:x.tx,ob:ob,cp:x.cp,novo:true,upd:{by:gh.login,at:Date.now()},hist:h})})
   .then(function(r){if(r&&r.abortado){f.textContent="Este script não está mais na Equipe (pode ter sido movido ou excluído).";return}aba="pl";setor="";tabs();chips();render()})
   .catch(function(e){ok.disabled=false;ok.textContent="Confirmar";aviso(b,msgErro(e))})}};bt.appendChild(bp)}}
@@ -255,7 +260,9 @@ if(d.sit){b.appendChild(el("div","lb","Ocorrência"));b.appendChild(el("div","",
 if(d.upd&&d.upd.at)b.appendChild(el("div","edby",(d.novo?"Criado":"Editado")+(d.upd.by?" por "+S(d.upd.by):"")+" em "+dt(d.upd.at)));
 b.appendChild(el("div","lb","Resposta"));
 var tb=el("div","tx");var sel={};
-function comp(){var t=d.tx,a=[],p=[],z=[];(d.cp||[]).forEach(function(c,i){if(sel[i]&&c&&typeof c.t==="string"&&c.t.trim())(c.at==="ini"?a:c.at==="p1"?p:z).push(c.t.trim())});
+function comp(){var t=d.tx,a=[],p=[],z=[],cps=Array.isArray(d.cp)?d.cp:[];
+t=t.replace(/[ \t]*\[caixinha:\s*([^\]]+)\]/gi,function(m0,nm){var i=-1;cps.forEach(function(c,j){if(c&&c.at==="m"&&nz(S(c.l).trim())===nz(nm.trim()))i=j});return i>-1&&sel[i]&&S(cps[i].t).trim()?(m0.charAt(0)==="["?"":" ")+cps[i].t.trim():""}).replace(/\n{3,}/g,"\n\n").replace(/^\s+/,"");
+cps.forEach(function(c,i){if(sel[i]&&c&&c.at!=="m"&&typeof c.t==="string"&&c.t.trim())(c.at==="ini"?a:c.at==="p1"?p:z).push(c.t.trim())});
 if(p.length){var pj=p.join(" ");if(temSaud(t))t=depoisIntro(t,pj);else{var m1=t.match(/^[^.!?]*[.!?]/);t=m1?m1[0]+" "+pj+t.slice(m1[0].length):pj+" "+t}}
 if(z.length){var zj=z.join(" ");if(temFim(t)||temAval(t))t=antesDesp(t,zj);else{var m=t.match(/[^.!?]*[.!?]\s*$/);t=m?t.slice(0,m.index)+" "+zj+" "+m[0].trim():t+" "+zj}}
 if(a.length)t=a.join(" ")+"\n\n"+t;return assina(t)}
@@ -292,7 +299,7 @@ f.appendChild(el("div","lb","Complementos (caixinhas)"));f.appendChild(el("div",
 var cw=el("div","cpl");f.appendChild(cw);
 function linhaCp(c){var r=el("div","cpr");r.appendChild(el("div","lb","Nome da caixinha"));var il=el("input");il.type="text";il.placeholder="Ex.: Se souber o prazo";il.value=S(c.l);r.appendChild(il);
 r.appendChild(el("div","lb","Frase que entra na resposta"));var itx=el("textarea");itx.placeholder="Ex.: A previsão é de (prazo).";itx.value=S(c.t);r.appendChild(itx);
-r.appendChild(el("div","lb","Onde a frase entra"));var sp=el("select");[["p1","Depois da apresentação (começo da resposta)"],["fim","Antes da despedida (fim da resposta)"],["ini","Bem no começo, antes de tudo"]].forEach(function(o){var op=el("option","",o[1]);op.value=o[0];sp.appendChild(op)});sp.value=c.at==="ini"||c.at==="p1"?c.at:"fim";r.appendChild(sp);
+r.appendChild(el("div","lb","Onde a frase entra"));var sp=el("select");[["m","No ponto marcado na resposta com [caixinha: nome]"],["p1","Depois da apresentação (começo da resposta)"],["fim","Antes da despedida (fim da resposta)"],["ini","Bem no começo, antes de tudo"]].forEach(function(o){var op=el("option","",o[1]);op.value=o[0];sp.appendChild(op)});sp.value=c.at==="ini"||c.at==="p1"||c.at==="m"?c.at:"fim";var dica=el("div","mi2","");function atDica(){dica.textContent=sp.value==="m"?"Na Resposta, escreva [caixinha: "+(il.value.trim()||"nome da caixinha")+"] no ponto exato onde a frase deve entrar.":""}sp.onchange=atDica;il.addEventListener("input",atDica);atDica();r.appendChild(sp);r.appendChild(dica);
 var rm=el("button","b o","🗑️ Remover esta caixinha");rm.style.marginTop="8px";rm.onclick=function(){r.remove()};r.appendChild(rm);
 r._get=function(){return {l:il.value.trim(),t:itx.value.trim(),at:sp.value}};cw.appendChild(r)}
 (Array.isArray(d.cp)?d.cp:[]).forEach(function(c){if(c)linhaCp(c)});
@@ -311,18 +318,19 @@ editing=Math.max(0,editing-1);tabs();render()})
 .catch(function(e){sv.disabled=false;sv.textContent=rot;msg.textContent=msgErro(e);msg.style.display=""})}}
 
 /* ---------- lista ---------- */
-function snip(d,q){var t=d.tx.replace(/\s+/g," ").trim();t=t.replace(/^(Oi|Olá)[^.!?]*[.!?]\s*(Tudo bem\?\s*)?(Me chamo[^.!?]*[.!?]\s*)?/,"");if(q){var k=nz(t).indexOf(q);if(k>-1){var s=Math.max(0,k-60);return (s>0?"…":"")+t.slice(s,s+170)+"…"}}return t.slice(0,150)+(t.length>150?"…":"")}
+function snip(d,q){var t=d.tx.replace(/\[caixinha:[^\]]*\]/gi,"").replace(/\s+/g," ").trim();t=t.replace(/^(Oi|Olá)[^.!?]*[.!?]\s*(Tudo bem\?\s*)?(Me chamo[^.!?]*[.!?]\s*)?/,"");if(q){var k=nz(t).indexOf(q);if(k>-1){var s=Math.max(0,k-60);return (s>0?"…":"")+t.slice(s,s+170)+"…"}}return t.slice(0,150)+(t.length>150?"…":"")}
 function render(){if(!carregado)return;if(editing){pend=true;document.getElementById("upd").style.display="";return}
-pend=false;document.getElementById("upd").style.display="none";if(aba==="sg"&&!isAprov())aba="pl";if(aba==="sg"){renderSug();return}
+pend=false;document.getElementById("upd").style.display="none";if((aba==="sg"||aba==="eq")&&!isAprov())aba="pl";if(aba==="sg"){renderSug();return}
 var L=document.getElementById("list");L.innerHTML="";var q=nz(busca),n=0,DS=dset();
-keys().forEach(function(k){if(setor&&setor!==k)return;
-var its=DS.filter(function(d){return d.s===k&&(!q||nz(code(d)+" "+d.t+" "+(d.sit||"")+" "+d.tx+" "+d.ob.join(" ")+" "+(notas[nk(d)]||"")).indexOf(q)>-1)});
+var GRP=aba==="eq"?[["cx","🧩 Já têm caixinhas (restaurados da antiga Equipe)"],["pc","🛠️ Precisavam de caixinha (preparados pelo Claude: confira e ajuste)"],["out","📄 Outros em preparação"]]:keys().map(function(k){return [k,SET[k][1]+" "+SET[k][0]]});
+GRP.forEach(function(G){var k=G[0];if(aba!=="eq"&&setor&&setor!==k)return;
+var its=DS.filter(function(d){return (aba==="eq"?((d.grp||"out")===k&&(!setor||d.s===setor)):d.s===k)&&(!q||nz(code(d)+" "+d.t+" "+(d.sit||"")+" "+d.tx+" "+d.ob.join(" ")+" "+(notas[nk(d)]||"")).indexOf(q)>-1)});
 its.sort(function(a,b){return a.n-b.n});
 if(q)its.sort(function(a,b){return (nz(a.t).indexOf(q)>-1?0:1)-(nz(b.t).indexOf(q)>-1?0:1)});
-if(!its.length&&(q||aba==="me"))return;
-var h=el("div","sec",SET[k][1]+" "+SET[k][0]+(aba==="pl"?" ("+its.length+")":""));h.style.setProperty("--c",SET[k][2]);L.appendChild(h);
+if(!its.length&&(q||aba==="me"||aba==="eq"))return;
+var h=el("div","sec",G[1]+(aba==="pl"||aba==="eq"?" ("+its.length+")":""));h.style.setProperty("--c",SET[k]?SET[k][2]:"var(--G)");L.appendChild(h);
 if(!its.length){L.appendChild(el("div","em","Nenhum script ainda."));return}
-its.forEach(function(d){n++;var key=nk(d);var de=el("details","card");de.style.setProperty("--c",SET[k][2]);
+its.forEach(function(d){n++;var key=nk(d);var de=el("details","card");de.style.setProperty("--c",(SET[d.s]||SET.P)[2]);
 var sm=el("summary");sm.appendChild(el("span","id",code(d)));var tt=el("span","tt");var tl=el("div","",d.t);if(d.upd&&d.upd.at&&Date.now()-d.upd.at<3*864e5)tl.appendChild(el("span","novo",d.novo?"novo":"atualizado"));tt.appendChild(tl);tt.appendChild(el("div","pv",snip(d,q)));sm.appendChild(tt);de.appendChild(sm);
 var b=el("div","bd");de.appendChild(b);
 de.addEventListener("toggle",function(){if(de.open){abertos[key]=1;if(!b.hasChildNodes())corpo(d,b)}else delete abertos[key]});
