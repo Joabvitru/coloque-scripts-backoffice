@@ -144,7 +144,7 @@ body:after{content:"BACKOFFICE";position:fixed;left:50%;top:58%;transform:transl
 </div>
 <script>
 /* ====== CONFIGURAÇÃO ====== */
-var BUILD="1795096382"; /* muda a cada publicação da página */
+var BUILD="1795114506"; /* muda a cada publicação da página */
 var REPO="Joabvitru/coloque-scripts-backoffice",BRANCH="main",ARQ="scripts.json";
 /* usuários do GitHub que aprovam scripts e editam a aba Equipe */
 var APROVADORES=["joabvitru"];
@@ -326,7 +326,7 @@ pend=false;document.getElementById("upd").style.display="none";if((aba==="sg"||a
 var L=document.getElementById("list");L.innerHTML="";var q=nz(busca),n=0,DS=dset();
 var GRP=aba==="eq"?[["cx","🧩 Já têm caixinhas (restaurados da antiga Equipe)"],["pc","🛠️ Precisavam de caixinha (preparados pelo Claude: confira e ajuste)"],["out","📄 Outros em preparação"]]:keys().map(function(k){return [k,SET[k][1]+" "+SET[k][0]]});
 GRP.forEach(function(G){var k=G[0];if(aba!=="eq"&&setor&&setor!==k)return;
-var its=DS.filter(function(d){return (aba==="eq"?((d.grp||"out")===k&&(!setor||d.s===setor)):d.s===k)&&(!q||nz(code(d)+" "+d.t+" "+(d.sit||"")+" "+d.tx+" "+d.ob.join(" ")+" "+(notas[nk(d)]||"")).indexOf(q)>-1)});
+var its=DS.filter(function(d){return (aba==="eq"?((d.grp||"out")===k&&(!setor||d.s===setor)):d.s===k)&&(!q||nz(code(d)+" "+(d.alias||"")+" "+d.t+" "+(d.sit||"")+" "+d.tx+" "+d.ob.join(" ")+" "+(notas[nk(d)]||"")).indexOf(q)>-1)});
 its.sort(function(a,b){return a.n-b.n});
 if(q)its.sort(function(a,b){return (nz(a.t).indexOf(q)>-1?0:1)-(nz(b.t).indexOf(q)>-1?0:1)});
 if(!its.length&&(q||aba==="me"||aba==="eq"))return;
