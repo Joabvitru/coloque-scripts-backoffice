@@ -71,6 +71,7 @@ select{width:100%;padding:10px;border-radius:10px;border:1px solid var(--bd);bac
 .mdet{margin-top:16px;border:1px solid var(--bd);border-radius:10px;padding:0 12px 10px}.mdet>summary{font-size:15px;padding:10px 0}
 .seg{display:flex;gap:6px;margin-top:4px}.seg button{flex:1;border:1px solid var(--bd);background:var(--bg);color:var(--tx);border-radius:10px;padding:10px 4px;font-size:15px;cursor:pointer}.seg button.on{background:var(--P);border-color:var(--P);color:var(--card);font-weight:600}
 @media (max-width:600px){.mtabs{grid-template-columns:repeat(2,1fr)}}
+.cpl{display:flex;flex-direction:column;gap:10px;margin:6px 0 8px}.cpr{border:1px dashed var(--bd);border-radius:10px;padding:4px 12px 12px}
 .exc{margin-top:28px;padding:0 12px 8px}.exc .urow span{font-size:15px}
 
 /* ===== Cabeçalho: tema Força Azul (militar) ===== */
@@ -180,6 +181,7 @@ function temAval(t){return /avali/i.test(t)}
 function semSaud(ab){var ps=paras(ab.trim());if(ps.length&&RSAUD.test(ps[0]))ps=ps.slice(1);return ps.join("\n\n").trim()}
 function depoisIntro(t,bloco){var ps=paras(t),i=0;for(var k=0;k<Math.min(3,ps.length);k++){if(RSAUD.test(ps[k])||/(aqui é|me chamo|meu nome é|estou cuidando|vou te ajudar|vou te auxiliar|prazer)/i.test(ps[k]))i=k;else if(k>0)break}return ps.slice(0,i+1).concat([bloco],ps.slice(i+1)).join("\n\n")}
 function antesFim(t,bloco){var ps=paras(t),i=-1;for(var k=ps.length-1;k>=Math.max(0,ps.length-3);k--){if(RFIM.test(ps[k]))i=k}if(i<0)return t+"\n\n"+bloco;return ps.slice(0,i).concat([bloco],ps.slice(i)).join("\n\n")}
+function antesDesp(t,bloco){var ps=paras(t),i=-1;for(var k=ps.length-1;k>=Math.max(1,ps.length-3);k--){if(RFIM.test(ps[k])||/avali/i.test(ps[k]))i=k}if(i<0)return t+"\n\n"+bloco;return ps.slice(0,i).concat([bloco],ps.slice(i)).join("\n\n")}
 function full(t){var ab=(cfg.ab!=null?cfg.ab:DATA.ABERT).trim(),fe=(cfg.fe!=null?cfg.fe:DATA.FECH).trim(),x;
 if(temSaud(t)){var r=semSaud(ab);x=r?depoisIntro(t.trim(),r):t.trim()}else x=(ab?ab+"\n\n":"")+t.trim();
 if(!temFim(t)&&fe)x+="\n\n"+fe;return assina(x)}
@@ -219,10 +221,10 @@ o.v=Date.now();return api("/repos/"+REPO+"/contents/"+ARQ,{method:"PUT",body:JSO
 .catch(function(e){if((e.status===409||e.status===422)&&tent<3)return new Promise(function(r){setTimeout(r,700)}).then(function(){return salvar(msg,muda,tent+1)});throw e})}
 function msgErro(e){var s=e&&e.status;if(s===401)return "Seu token do GitHub não vale mais. Entre de novo no modo edição.";if(s===403||s===404)return "O GitHub recusou a alteração ("+((e&&e.message)||s)+"). Confira se o token foi criado com a opção public_repo marcada e se o seu usuário é colaborador do repositório. Depois, clique na chave, em Sair, e entre de novo com o token certo.";return "Não consegui salvar ("+((e&&e.message)||"erro")+"). Verifique a conexão e tente de novo."}
 function acha(o,tab,k){var a=tab==="eq"?o.D:o.PL;for(var i=0;i<a.length;i++)if(a[i].k===k)return a[i];return null}
-function snapDe(x){return {s:x.s,t:x.t,sit:x.sit||"",tx:x.tx,ob:x.ob||[],by:(x.upd&&x.upd.by)||"",at:(x.upd&&x.upd.at)||0}}
+function snapDe(x){return {s:x.s,t:x.t,sit:x.sit||"",tx:x.tx,ob:x.ob||[],cp:x.cp||[],by:(x.upd&&x.upd.by)||"",at:(x.upd&&x.upd.at)||0}}
 function aplicaEdicao(x,vals){if(!x.novo&&!x.orig)x.orig={s:x.s,t:x.t,sit:x.sit||"",tx:x.tx,ob:x.ob||[]};
 var h=Array.isArray(x.hist)?x.hist:[];h.unshift(snapDe(x));x.hist=h.slice(0,6);
-x.s=vals.s;x.t=vals.t;x.sit=vals.sit;x.tx=vals.tx;x.ob=vals.ob;x.upd={by:gh.login,at:Date.now()}}
+x.s=vals.s;x.t=vals.t;x.sit=vals.sit;x.tx=vals.tx;x.ob=vals.ob;if(vals.cp!==undefined){if(vals.cp.length)x.cp=vals.cp;else delete x.cp}x.upd={by:gh.login,at:Date.now()}}
 function aviso(b,txt){var a=el("div","warn",txt);b.insertBefore(a,b.firstChild);setTimeout(function(){a.remove()},7000)}
 
 function proxN(L,s){var n=1;L.forEach(function(m){if(m.s===s&&!m.p&&m.n>=n)n=m.n+1});return n}
@@ -253,7 +255,10 @@ if(d.sit){b.appendChild(el("div","lb","Ocorrência"));b.appendChild(el("div","",
 if(d.upd&&d.upd.at)b.appendChild(el("div","edby",(d.novo?"Criado":"Editado")+(d.upd.by?" por "+S(d.upd.by):"")+" em "+dt(d.upd.at)));
 b.appendChild(el("div","lb","Resposta"));
 var tb=el("div","tx");var sel={};
-function comp(){var t=d.tx,a="",z="",p="";(d.cp||[]).forEach(function(c,i){if(sel[i]){if(c.at==="ini")a+=c.t+" ";else if(c.at==="p1")p+=c.t+" ";else z+=c.t+" "}});p=p.trim();if(p){var m1=t.match(/^[^.!?]*[.!?]/);if(m1)t=m1[0]+" "+p+t.slice(m1[0].length);else t=p+" "+t}z=z.trim();if(z){var m=t.match(/[^.!?]*[.!?]\s*$/);if(m)t=t.slice(0,m.index)+" "+z+m[0];else t+=" "+z}return assina(a+t)}
+function comp(){var t=d.tx,a=[],p=[],z=[];(d.cp||[]).forEach(function(c,i){if(sel[i]&&c&&typeof c.t==="string"&&c.t.trim())(c.at==="ini"?a:c.at==="p1"?p:z).push(c.t.trim())});
+if(p.length){var pj=p.join(" ");if(temSaud(t))t=depoisIntro(t,pj);else{var m1=t.match(/^[^.!?]*[.!?]/);t=m1?m1[0]+" "+pj+t.slice(m1[0].length):pj+" "+t}}
+if(z.length){var zj=z.join(" ");if(temFim(t)||temAval(t))t=antesDesp(t,zj);else{var m=t.match(/[^.!?]*[.!?]\s*$/);t=m?t.slice(0,m.index)+" "+zj+" "+m[0].trim():t+" "+zj}}
+if(a.length)t=a.join(" ")+"\n\n"+t;return assina(t)}
 tb.textContent=comp();b.appendChild(tb);
 if(d.cp&&d.cp.length){var cw=el("div","");cw.appendChild(el("div","lb","Complementos (marque para incluir na resposta)"));d.cp.forEach(function(c,i){var lb=el("label","cmp");var ck=el("input");ck.type="checkbox";ck.onchange=function(){sel[i]=ck.checked;tb.textContent=comp()};lb.appendChild(ck);lb.appendChild(el("span","",S(c.l)));cw.appendChild(lb)});b.appendChild(cw)}
 var bt=el("div","bt");var b1=el("button","b","📋 Copiar só a resposta");b1.title="Copia apenas o texto da resposta, sem saudação nem assinatura";b1.onclick=function(){copiar(comp(),b1)};bt.appendChild(b1);
@@ -269,7 +274,7 @@ var hs=(!d.mine&&Array.isArray(d.hist))?d.hist.filter(function(h){return h&&type
 if(hs.length){var hv=el("details","hist");hv.appendChild(el("summary","","🕘 Versões anteriores ("+hs.length+")"));
 hs.forEach(function(h){var it=el("div","hit");it.appendChild(el("div","edby",h.at?"Versão"+(h.by?" de "+S(h.by):"")+" em "+dt(h.at):"Texto original"));
 if(typeof h.t==="string"&&h.t!==d.t)it.appendChild(el("div","","Título: "+h.t));it.appendChild(el("div","tx sm",h.tx));
-if(pe){var ub=el("button","b o","Usar esta versão");ub.onclick=function(){ub.disabled=true;ub.textContent="Salvando...";salvar("Voltar versão "+code(d),function(o){var x=acha(o,d.tab,d.k);if(!x)return false;aplicaEdicao(x,{s:SET[h.s]?h.s:x.s,t:S(h.t)||x.t,sit:S(h.sit),tx:h.tx,ob:A(h.ob)})}).then(function(){render()}).catch(function(e){ub.disabled=false;ub.textContent="Usar esta versão";aviso(b,msgErro(e))})};it.appendChild(ub)}
+if(pe){var ub=el("button","b o","Usar esta versão");ub.onclick=function(){ub.disabled=true;ub.textContent="Salvando...";salvar("Voltar versão "+code(d),function(o){var x=acha(o,d.tab,d.k);if(!x)return false;aplicaEdicao(x,{s:SET[h.s]?h.s:x.s,t:S(h.t)||x.t,sit:S(h.sit),tx:h.tx,ob:A(h.ob),cp:Array.isArray(h.cp)?h.cp.filter(function(c){return c&&typeof c.l==="string"&&typeof c.t==="string"}):undefined})}).then(function(){render()}).catch(function(e){ub.disabled=false;ub.textContent="Usar esta versão";aviso(b,msgErro(e))})};it.appendChild(ub)}
 hv.appendChild(it)});b.appendChild(hv)}
 if(d.ob.length){b.appendChild(el("div","lb","Observações"));var u=el("ul","ob");d.ob.forEach(function(o){var li=el("li","",o);li.style.whiteSpace="pre-wrap";u.appendChild(li)});b.appendChild(u)}
 b.appendChild(el("div","lb","Minhas anotações (só neste navegador)"));
@@ -283,12 +288,21 @@ f.appendChild(el("div","lb","Título"));var it=el("input");it.type="text";it.val
 f.appendChild(el("div","lb","Ocorrência (opcional)"));var is=el("textarea");is.value=d.sit||"";f.appendChild(is);
 f.appendChild(el("div","lb","Resposta"));var ix=el("textarea");ix.value=d.tx;ix.style.minHeight="200px";f.appendChild(ix);
 f.appendChild(el("div","lb","Observações (uma por linha)"));var io=el("textarea");io.value=d.ob.join("\n");f.appendChild(io);
+f.appendChild(el("div","lb","Complementos (caixinhas)"));f.appendChild(el("div","mi2","Cada caixinha aparece no script. Quando a pessoa marca, a frase entra na resposta. Use para partes que só valem em alguns casos."));
+var cw=el("div","cpl");f.appendChild(cw);
+function linhaCp(c){var r=el("div","cpr");r.appendChild(el("div","lb","Nome da caixinha"));var il=el("input");il.type="text";il.placeholder="Ex.: Se souber o prazo";il.value=S(c.l);r.appendChild(il);
+r.appendChild(el("div","lb","Frase que entra na resposta"));var itx=el("textarea");itx.placeholder="Ex.: A previsão é de (prazo).";itx.value=S(c.t);r.appendChild(itx);
+r.appendChild(el("div","lb","Onde a frase entra"));var sp=el("select");[["p1","Depois da apresentação (começo da resposta)"],["fim","Antes da despedida (fim da resposta)"],["ini","Bem no começo, antes de tudo"]].forEach(function(o){var op=el("option","",o[1]);op.value=o[0];sp.appendChild(op)});sp.value=c.at==="ini"||c.at==="p1"?c.at:"fim";r.appendChild(sp);
+var rm=el("button","b o","🗑️ Remover esta caixinha");rm.style.marginTop="8px";rm.onclick=function(){r.remove()};r.appendChild(rm);
+r._get=function(){return {l:il.value.trim(),t:itx.value.trim(),at:sp.value}};cw.appendChild(r)}
+(Array.isArray(d.cp)?d.cp:[]).forEach(function(c){if(c)linhaCp(c)});
+var adc=el("button","b o","➕ Adicionar caixinha");adc.onclick=function(){linhaCp({});cw.lastChild.querySelector("input").focus()};f.appendChild(adc);
 var msg=el("div","warn");msg.style.display="none";f.appendChild(msg);
 var bt=el("div","bt");var rot=d.mine?"💾 Salvar":"💾 Salvar para todos";var sv=el("button","b",rot);var cc=el("button","b o","Cancelar");bt.appendChild(sv);bt.appendChild(cc);f.appendChild(bt);b.appendChild(f);it.focus();
 cc.onclick=function(){editing=Math.max(0,editing-1);if(pend)render();else corpo(d,b)};var forcar=false;
-sv.onclick=function(){var vals={s:ss.value,t:it.value.trim(),sit:is.value.trim(),tx:ix.value.trim(),ob:io.value.split("\n").map(function(x){return x.trim()}).filter(Boolean)};
+sv.onclick=function(){var vals={s:ss.value,t:it.value.trim(),sit:is.value.trim(),tx:ix.value.trim(),ob:io.value.split("\n").map(function(x){return x.trim()}).filter(Boolean)};vals.cp=[].map.call(cw.querySelectorAll(".cpr"),function(r){return r._get()}).filter(function(c){return c.l&&c.t});
 it.style.borderColor=vals.t?"":"var(--S)";ix.style.borderColor=vals.tx?"":"var(--S)";if(!vals.t||!vals.tx)return;
-if(d.mine){mine.forEach(function(m){if(m.id===d.id){m.s=vals.s;m.t=vals.t;m.sit=vals.sit;m.tx=vals.tx;m.ob=vals.ob}});lsS("mine-scripts",mine);editing=Math.max(0,editing-1);tabs();render();return}
+if(d.mine){mine.forEach(function(m){if(m.id===d.id){m.s=vals.s;m.t=vals.t;m.sit=vals.sit;m.tx=vals.tx;m.ob=vals.ob;if(vals.cp.length)m.cp=vals.cp;else delete m.cp}});lsS("mine-scripts",mine);editing=Math.max(0,editing-1);tabs();render();return}
 sv.disabled=true;sv.textContent="Salvando...";msg.style.display="none";var conflito=false;
 salvar("Editar "+code(d)+": "+vals.t,function(o){var x=acha(o,d.tab,d.k);if(!x)return false;var at=(x.upd&&x.upd.at)||0;if(!forcar&&at!==inicio){conflito=true;return false}aplicaEdicao(x,vals)})
 .then(function(r){if(conflito){forcar=true;sv.disabled=false;sv.textContent=rot;msg.textContent="Alguém da equipe alterou este script enquanto você editava. Clique em Salvar de novo para substituir pela sua versão, ou Cancelar para ver a versão nova.";msg.style.display="";return}
