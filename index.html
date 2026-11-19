@@ -124,7 +124,7 @@ body:after{content:"BACKOFFICE";position:fixed;left:50%;top:58%;transform:transl
 <div class="msec" data-s="apa"><div class="lb">Tema</div><div class="seg" id="segth"><button data-th="">🖥️ Automático</button><button data-th="light">☀️ Claro</button><button data-th="dark">🌙 Escuro</button></div><select id="uth" hidden><option value="">Automático</option><option value="light">Claro</option><option value="dark">Escuro</option></select>
 <div class="lb">Tamanho da letra</div><div class="bt" style="align-items:center;margin-top:4px"><button class="b o" id="zm">A−</button><b id="zv"></b><button class="b o" id="zp">A+</button></div>
 <details class="mdet"><summary>Cores e emojis dos setores</summary><div id="usets"></div><div class="bt"><button class="b o" id="urst">Voltar à aparência padrão</button></div></details></div>
-<div class="msec" data-s="edi"><p class="mi">Só para quem vai <b>alterar</b> os scripts (supervisor e editores). Para consultar e copiar, não precisa entrar.</p><div class="cnt" id="lgst"></div><button class="b o" id="lgout" style="display:none">Sair do modo edição</button><div id="lgform"><div class="lb">Como entrar (só na primeira vez neste navegador)</div><ol class="lgi"><li>Você precisa ter conta no GitHub e ter sido convidado(a) pelo supervisor como colaborador(a).</li><li><a href="https://github.com/settings/tokens/new?scopes=public_repo&amp;description=Scripts%20backoffice" target="_blank" rel="noopener"><b>Clique aqui para abrir o GitHub</b></a> já com a opção certa marcada.</li><li>Lá, escolha a validade em <b>Expiration</b>, desça até o fim e clique em <b>Generate token</b>.</li><li>Copie o código que aparece (começa com <b>ghp_</b>) e cole aqui embaixo.</li></ol><div class="lb">Token do GitHub</div><input type="text" id="lgtok" autocomplete="off" placeholder="ghp_..."><div class="cnt" id="lgerr" style="color:var(--S)"></div><div class="bt"><button class="b" id="lgok" style="background:var(--P)">Entrar</button></div><p class="cnt">O token fica guardado só neste navegador. Não use o modo edição em computador compartilhado.</p></div></div>
+<div class="msec" data-s="edi"><div id="aprovbox" style="display:none"></div><p class="mi">Só para quem vai <b>alterar</b> os scripts (supervisor e editores). Para consultar e copiar, não precisa entrar.</p><div class="cnt" id="lgst"></div><button class="b o" id="lgout" style="display:none">Sair do modo edição</button><div id="lgform"><div class="lb">Como entrar (só na primeira vez neste navegador)</div><ol class="lgi"><li>Você precisa ter conta no GitHub e ter sido convidado(a) pelo supervisor como colaborador(a).</li><li><a href="https://github.com/settings/tokens/new?scopes=public_repo&amp;description=Scripts%20backoffice" target="_blank" rel="noopener"><b>Clique aqui para abrir o GitHub</b></a> já com a opção certa marcada.</li><li>Lá, escolha a validade em <b>Expiration</b>, desça até o fim e clique em <b>Generate token</b>.</li><li>Copie o código que aparece (começa com <b>ghp_</b>) e cole aqui embaixo.</li></ol><div class="lb">Token do GitHub</div><input type="text" id="lgtok" autocomplete="off" placeholder="ghp_..."><div class="cnt" id="lgerr" style="color:var(--S)"></div><div class="bt"><button class="b" id="lgok" style="background:var(--P)">Entrar</button></div><p class="cnt">O token fica guardado só neste navegador. Não use o modo edição em computador compartilhado.</p></div></div>
 <div class="msec" data-s="aju"><div class="lb">Como usar</div><ol class="lgi"><li><b>Ache o script:</b> digite na busca (ex.: boleto, SUB) ou escolha o setor.</li><li><b>Abra o script</b> clicando nele e use os botões <b>Copiar</b>.</li><li><b>Não achou?</b> Clique em <b>💡 Sugerir script</b>. O supervisor analisa.</li></ol>
 <div class="lb">As abas</div><ul class="lgi"><li><b>⭐ Equipe:</b> scripts aprovados pelo supervisor.</li><li><b>👤 Meus:</b> seus rascunhos, só neste navegador.</li></ul>
 <div class="lb">O que fica salvo onde</div><p class="mi">Os scripts da Equipe são de todos: o que alguém altera aparece para todos. Seu nome, aparência, anotações e a aba Meus ficam salvos só neste navegador.</p>
@@ -144,7 +144,7 @@ body:after{content:"BACKOFFICE";position:fixed;left:50%;top:58%;transform:transl
 </div>
 <script>
 /* ====== CONFIGURAÇÃO ====== */
-var BUILD="1795114506"; /* muda a cada publicação da página */
+var BUILD="1795116636"; /* muda a cada publicação da página */
 var REPO="Joabvitru/coloque-scripts-backoffice",BRANCH="main",ARQ="scripts.json";
 /* usuários do GitHub que aprovam scripts e editam a aba Equipe */
 var APROVADORES=["joabvitru"];
@@ -193,7 +193,9 @@ if(!temSaud(t)&&ab2)x=ab2+"\n\n"+x;if(!temAval(t)&&av)x=temFim(t)?antesFim(x,av)
 function dt(ms){if(!ms)return "";var d=new Date(ms);function z(n){return(n<10?"0":"")+n}return z(d.getDate())+"/"+z(d.getMonth()+1)+"/"+d.getFullYear()+" "+z(d.getHours())+":"+z(d.getMinutes())}
 function keys(){return Object.keys(SET).filter(function(k){return aba==="pl"||(k!=="G"&&k!=="X")})}
 function podeEditar(){return !!(gh&&gh.token)}
-function isAprov(){return podeEditar()&&APROVADORES.indexOf(String(gh.login||"").toLowerCase())>-1}
+function listaAprov(){return APROVADORES.concat((Array.isArray(DATA.aprov)?DATA.aprov:[]).map(function(x){return String(x).toLowerCase()}))}
+function isDono(){return podeEditar()&&APROVADORES.indexOf(String(gh.login||"").toLowerCase())>-1}
+function isAprov(){return podeEditar()&&listaAprov().indexOf(String(gh.login||"").toLowerCase())>-1}
 function pode(d){return d.mine||(podeEditar()&&(d.tab!=="pl"||isAprov()))}
 
 function lista(tab){return tab==="eq"?DATA.D:DATA.PL}
@@ -215,7 +217,7 @@ function b64e(s){return btoa(unescape(encodeURIComponent(s)))}
 function api(path,opt){opt=opt||{};var h={"Accept":"application/vnd.github+json"};if(gh&&gh.token)h.Authorization="Bearer "+gh.token;if(opt.body)h["Content-Type"]="application/json";
 return fetch("https://api.github.com"+path,{method:opt.method||"GET",headers:h,body:opt.body,cache:"no-store"}).then(function(r){return r.json().catch(function(){return {}}).then(function(j){if(!r.ok){var e=new Error(j.message||("Erro "+r.status));e.status=r.status;throw e}return j})})}
 function serializa(o){function arr(a){return "[\n"+a.map(function(x){return JSON.stringify(x)}).join(",\n")+"\n]"}
-return '{"v":'+JSON.stringify(o.v||0)+',"ABERT":'+JSON.stringify(o.ABERT)+',"FECH":'+JSON.stringify(o.FECH)+',"sug":'+JSON.stringify(o.sug||{})+',\n"D":'+arr(o.D)+',\n"PL":'+arr(o.PL)+"}\n"}
+return '{"v":'+JSON.stringify(o.v||0)+',"ABERT":'+JSON.stringify(o.ABERT)+',"FECH":'+JSON.stringify(o.FECH)+',"sug":'+JSON.stringify(o.sug||{})+',"aprov":'+JSON.stringify(o.aprov||[])+',\n"D":'+arr(o.D)+',\n"PL":'+arr(o.PL)+"}\n"}
 /* lê a versão mais recente, aplica a mudança e grava; tenta de novo se alguém salvou no meio */
 function salvar(msg,muda,tent){tent=tent||0;
 return api("/repos/"+REPO+"/contents/"+ARQ+"?ref="+BRANCH+"&t="+Date.now()).then(function(f){var o=JSON.parse(b64d(f.content));var r=muda(o);if(r===false)return {abortado:true};
@@ -369,7 +371,16 @@ var uth=document.getElementById("uth");uth.value=ui.th||"";uth.onchange=function
 document.getElementById("urst").onclick=function(){ui={co:{},em:{}};saveU();uth.value="";buildU();refresh()};
 
 /* ---------- modo edição (login GitHub) ---------- */
-function estadoLogin(){var s=document.getElementById("sync"),lg=document.getElementById("lgst"),bo=document.getElementById("lgout"),fm=document.getElementById("lgform");
+function montaAprov(){var bx=document.getElementById("aprovbox");if(!bx)return;bx.innerHTML="";if(!isDono()){bx.style.display="none";return}bx.style.display="";
+var w=el("div","mdet");w.style.marginTop="0";w.style.marginBottom="14px";w.style.paddingTop="8px";w.appendChild(el("div","lb","👥 Quem pode editar os scripts"));
+w.appendChild(el("div","mi2","Coloque o usuário do GitHub da pessoa. Antes, convide-a no repositório (Settings > Collaborators) e peça para ela aceitar o convite."));
+APROVADORES.forEach(function(u){var r=el("div","urow");r.appendChild(el("span","","@"+u+" (dono)"));w.appendChild(r)});
+(Array.isArray(DATA.aprov)?DATA.aprov:[]).forEach(function(u){var r=el("div","urow");r.appendChild(el("span","","@"+u));var rm=el("button","b o","Remover");rm.onclick=function(){rm.disabled=true;salvar("Remover editor @"+u,function(o){o.aprov=(o.aprov||[]).filter(function(x){return String(x).toLowerCase()!==String(u).toLowerCase()})}).then(function(){montaAprov();tabs();render()}).catch(function(e){rm.disabled=false;aviso(w,msgErro(e))})};r.appendChild(rm);w.appendChild(r)});
+var line=el("div","bt");var inp=el("input");inp.type="text";inp.placeholder="usuário do GitHub (ex.: rafa-silva)";inp.style.flex="1";var ad=el("button","b","Adicionar");ad.style.background="var(--P)";line.appendChild(inp);line.appendChild(ad);w.appendChild(line);
+ad.onclick=function(){var u=inp.value.trim().replace(/^@/,"").replace(/^https?:\/\/github\.com\//i,"").replace(/\/.*$/,"").toLowerCase();if(!/^[a-z0-9-]{1,39}$/.test(u)){aviso(w,"Usuário inválido. Use só o nome do usuário do GitHub.");return}
+ad.disabled=true;ad.textContent="Salvando...";salvar("Adicionar editor @"+u,function(o){o.aprov=Array.isArray(o.aprov)?o.aprov:[];if(o.aprov.map(function(x){return String(x).toLowerCase()}).indexOf(u)>-1||APROVADORES.indexOf(u)>-1)return false;o.aprov.push(u)}).then(function(){montaAprov();tabs();render()}).catch(function(e){ad.disabled=false;ad.textContent="Adicionar";aviso(w,msgErro(e))})};
+bx.appendChild(w)}
+function estadoLogin(){montaAprov();var s=document.getElementById("sync"),lg=document.getElementById("lgst"),bo=document.getElementById("lgout"),fm=document.getElementById("lgform");
 var eb=document.getElementById("edit");eb.textContent=podeEditar()?"✏️ Editando":"🔑 Entrar";eb.title=podeEditar()?"Você está no modo edição":"Entrar para editar os scripts (só editores)";eb.classList.toggle("on",podeEditar());var bar=document.getElementById("edbar");bar.innerHTML="";if(podeEditar()){bar.style.display="";bar.appendChild(el("span","","✏️ Modo edição ativo como @"+gh.login+(isAprov()?" (aprovador)":"")+". O que você alterar aparece para todos."));var sx=el("button","","Sair");sx.onclick=function(){document.getElementById("lgout").click()};bar.appendChild(sx)}else bar.style.display="none";
 if(podeEditar()){lg.textContent="✅ Modo edição ativo como @"+gh.login+". Suas alterações valem para todos.";bo.style.display="";fm.style.display="none"}
 else{lg.textContent="Para consultar e copiar os scripts não precisa entrar. Só quem vai alterar os scripts da equipe precisa do modo edição.";bo.style.display="none";fm.style.display=""}}
@@ -454,7 +465,7 @@ var hp=document.getElementById("help");if(!lsG("help-off",false))hp.style.displa
 /* ---------- carregar e acompanhar atualizações ---------- */
 function sync(s){var e=document.getElementById("sync");e.className="sync "+s;e.textContent=s==="ok"?"● Atualizado · a página se atualiza sozinha":s==="wait"?"○ Carregando...":"○ Sem conexão: mostrando a última versão salva neste navegador"}
 function usa(o){if(!o||!Array.isArray(o.D)||!Array.isArray(o.PL))return false;if(carregado&&DATA.v&&o.v&&o.v<DATA.v)return false;DATA=o;lsS("cache-scripts",o);carregado=true;return true}
-function busca1(primeira){return fetch(ARQ+"?t="+Date.now(),{cache:"no-store"}).then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(o){var mudou=!carregado||o.v!==DATA.v;if(usa(o)&&mudou){if(primeira)ld();tabs();render()}sync("ok")}).catch(function(){if(!carregado){var c=lsG("cache-scripts",null);if(usa(c)){ld();tabs();render()}else document.getElementById("list").textContent="Não consegui carregar os scripts. Atualize a página."}sync("off")})}
+function busca1(primeira){return fetch(ARQ+"?t="+Date.now(),{cache:"no-store"}).then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(o){var mudou=!carregado||o.v!==DATA.v;if(usa(o)&&mudou){if(primeira)ld();tabs();render();montaAprov()}sync("ok")}).catch(function(){if(!carregado){var c=lsG("cache-scripts",null);if(usa(c)){ld();tabs();render()}else document.getElementById("list").textContent="Não consegui carregar os scripts. Atualize a página."}sync("off")})}
 buildU();applyUI();chips();estadoLogin();sync("wait");
 document.getElementById("list").appendChild(el("div","em","Carregando scripts..."));
 busca1(true);
