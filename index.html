@@ -136,8 +136,11 @@ function nz(s){return s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"")}
 function code(d){return (d.p||d.s)+"-"+(d.n<10?"0":"")+d.n}
 function nk(d){return d.mine?"me:"+d.id:d.k}
 function meuNome(){return cfg.nome||"[seu nome]"}
-function full(t){return ((cfg.ab!=null?cfg.ab+"\n\n":DATA.ABERT)+t+(cfg.fe!=null?"\n\n"+cfg.fe:DATA.FECH)).split("{nome}").join(meuNome())}
-function full2(t){return ((cfg.ab2!=null?cfg.ab2:AB2)+"\n\n"+t+"\n\n"+(cfg.av!=null?cfg.av:AVAL)+(cfg.fe!=null?"\n\n"+cfg.fe:DATA.FECH)).split("{nome}").join(meuNome())}
+/* troca os marcadores do nome do atendente: {nome}, (seu nome), [seu nome], (NOME) */
+var RNOME=/\{nome\}|[\(\[]\s*seu nome\s*[\)\]]|\(\s*NOME\s*\)/gi;
+function assina(t){if(!cfg.nome)return t.replace(/\{nome\}/g,"(seu nome)");return t.replace(RNOME,function(m){return /^\(\s*nome\s*\)$/.test(m)&&m.indexOf("NOME")<0?m:cfg.nome})}
+function full(t){return assina((cfg.ab!=null?cfg.ab+"\n\n":DATA.ABERT)+t+(cfg.fe!=null?"\n\n"+cfg.fe:DATA.FECH))}
+function full2(t){return assina((cfg.ab2!=null?cfg.ab2:AB2)+"\n\n"+t+"\n\n"+(cfg.av!=null?cfg.av:AVAL)+(cfg.fe!=null?"\n\n"+cfg.fe:DATA.FECH))}
 function dt(ms){if(!ms)return "";var d=new Date(ms);function z(n){return(n<10?"0":"")+n}return z(d.getDate())+"/"+z(d.getMonth()+1)+"/"+d.getFullYear()+" "+z(d.getHours())+":"+z(d.getMinutes())}
 function keys(){return Object.keys(SET).filter(function(k){return aba==="pl"||(k!=="G"&&k!=="X")})}
 function podeEditar(){return !!(gh&&gh.token)}
@@ -205,7 +208,7 @@ if(d.sit){b.appendChild(el("div","lb","Ocorrência"));b.appendChild(el("div","",
 if(d.upd&&d.upd.at)b.appendChild(el("div","edby",(d.novo?"Criado":"Editado")+(d.upd.by?" por "+S(d.upd.by):"")+" em "+dt(d.upd.at)));
 b.appendChild(el("div","lb","Resposta"));
 var tb=el("div","tx");var sel={};
-function comp(){var t=d.tx,a="",z="",p="";(d.cp||[]).forEach(function(c,i){if(sel[i]){if(c.at==="ini")a+=c.t+" ";else if(c.at==="p1")p+=c.t+" ";else z+=c.t+" "}});p=p.trim();if(p){var m1=t.match(/^[^.!?]*[.!?]/);if(m1)t=m1[0]+" "+p+t.slice(m1[0].length);else t=p+" "+t}z=z.trim();if(z){var m=t.match(/[^.!?]*[.!?]\s*$/);if(m)t=t.slice(0,m.index)+" "+z+m[0];else t+=" "+z}return (a+t).split("{nome}").join(meuNome())}
+function comp(){var t=d.tx,a="",z="",p="";(d.cp||[]).forEach(function(c,i){if(sel[i]){if(c.at==="ini")a+=c.t+" ";else if(c.at==="p1")p+=c.t+" ";else z+=c.t+" "}});p=p.trim();if(p){var m1=t.match(/^[^.!?]*[.!?]/);if(m1)t=m1[0]+" "+p+t.slice(m1[0].length);else t=p+" "+t}z=z.trim();if(z){var m=t.match(/[^.!?]*[.!?]\s*$/);if(m)t=t.slice(0,m.index)+" "+z+m[0];else t+=" "+z}return assina(a+t)}
 tb.textContent=comp();b.appendChild(tb);
 if(d.cp&&d.cp.length){var cw=el("div","");cw.appendChild(el("div","lb","Complementos (marque para incluir na resposta)"));d.cp.forEach(function(c,i){var lb=el("label","cmp");var ck=el("input");ck.type="checkbox";ck.onchange=function(){sel[i]=ck.checked;tb.textContent=comp()};lb.appendChild(ck);lb.appendChild(el("span","",S(c.l)));cw.appendChild(lb)});b.appendChild(cw)}
 var bt=el("div","bt");var b1=el("button","b","📋 Copiar só a resposta");b1.title="Copia apenas o texto da resposta, sem saudação nem assinatura";b1.onclick=function(){copiar(comp(),b1)};bt.appendChild(b1);
