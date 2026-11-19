@@ -170,8 +170,22 @@ function meuNome(){return cfg.nome||"[seu nome]"}
 /* troca os marcadores do nome do atendente: {nome}, (seu nome), [seu nome], (NOME) */
 var RNOME=/\{nome\}|[\(\[]\s*seu nome\s*[\)\]]|\(\s*NOME\s*\)/gi;
 function assina(t){if(!cfg.nome)return t.replace(/\{nome\}/g,"(seu nome)");return t.replace(RNOME,function(m){return /^\(\s*nome\s*\)$/.test(m)&&m.indexOf("NOME")<0?m:cfg.nome})}
-function full(t){return assina((cfg.ab!=null?cfg.ab+"\n\n":DATA.ABERT)+t+(cfg.fe!=null?"\n\n"+cfg.fe:DATA.FECH))}
-function full2(t){return assina((cfg.ab2!=null?cfg.ab2:AB2)+"\n\n"+t+"\n\n"+(cfg.av!=null?cfg.av:AVAL)+(cfg.fe!=null?"\n\n"+cfg.fe:DATA.FECH))}
+/* monta a mensagem completa sem repetir o que o script já tem (saudação, avaliação, despedida) */
+var RSAUD=/^\s*(oi|olá|ola|bom dia|boa tarde|boa noite|tudo bem)(?=[\s,!.?])/i;
+var RFIM=/(abraço|abraços|atenciosamente|att\.|até mais|bons estudos|um ótimo dia|uma ótima tarde)/i;
+function paras(t){return t.split(/\n\s*\n/)}
+function temSaud(t){return paras(t).slice(0,3).some(function(p){return p.split("\n").some(function(l){return RSAUD.test(l)})})}
+function temFim(t){return RFIM.test(t.slice(-350))}
+function temAval(t){return /avali/i.test(t)}
+function semSaud(ab){var ps=paras(ab.trim());if(ps.length&&RSAUD.test(ps[0]))ps=ps.slice(1);return ps.join("\n\n").trim()}
+function depoisIntro(t,bloco){var ps=paras(t),i=0;for(var k=0;k<Math.min(3,ps.length);k++){if(RSAUD.test(ps[k])||/(aqui é|me chamo|meu nome é|estou cuidando|vou te ajudar|vou te auxiliar|prazer)/i.test(ps[k]))i=k;else if(k>0)break}return ps.slice(0,i+1).concat([bloco],ps.slice(i+1)).join("\n\n")}
+function antesFim(t,bloco){var ps=paras(t),i=-1;for(var k=ps.length-1;k>=Math.max(0,ps.length-3);k--){if(RFIM.test(ps[k]))i=k}if(i<0)return t+"\n\n"+bloco;return ps.slice(0,i).concat([bloco],ps.slice(i)).join("\n\n")}
+function full(t){var ab=(cfg.ab!=null?cfg.ab:DATA.ABERT).trim(),fe=(cfg.fe!=null?cfg.fe:DATA.FECH).trim(),x;
+if(temSaud(t)){var r=semSaud(ab);x=r?depoisIntro(t.trim(),r):t.trim()}else x=(ab?ab+"\n\n":"")+t.trim();
+if(!temFim(t)&&fe)x+="\n\n"+fe;return assina(x)}
+function full2(t){var ab2=(cfg.ab2!=null?cfg.ab2:AB2).trim(),av=(cfg.av!=null?cfg.av:AVAL).trim(),fe=(cfg.fe!=null?cfg.fe:DATA.FECH).trim(),x=t.trim();
+if(!temSaud(t)&&ab2)x=ab2+"\n\n"+x;if(!temAval(t)&&av)x=temFim(t)?antesFim(x,av):x+"\n\n"+av;if(!temFim(t)&&fe)x+="\n\n"+fe;return assina(x)}
+
 function dt(ms){if(!ms)return "";var d=new Date(ms);function z(n){return(n<10?"0":"")+n}return z(d.getDate())+"/"+z(d.getMonth()+1)+"/"+d.getFullYear()+" "+z(d.getHours())+":"+z(d.getMinutes())}
 function keys(){return Object.keys(SET).filter(function(k){return aba==="pl"||(k!=="G"&&k!=="X")})}
 function podeEditar(){return !!(gh&&gh.token)}
