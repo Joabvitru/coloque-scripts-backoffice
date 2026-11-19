@@ -270,7 +270,7 @@ var b5=el("button","b o","🗑️ Excluir");b5.onclick=function(){if(!b5.dataset
 if(d.mine){mine=mine.filter(function(x){return x.id!==d.id});delete notas[key];lsS("mine-scripts",mine);lsS(KEY,notas);tabs();render();return}
 b5.disabled=true;b5.textContent="Excluindo...";salvar("Excluir "+code(d)+": "+d.t,function(o){var x=acha(o,d.tab,d.k);if(!x)return false;x.del=true;x.upd={by:gh.login,at:Date.now()}}).then(function(){tabs();render()}).catch(function(e){b5.disabled=false;b5.textContent="🗑️ Excluir";aviso(b,msgErro(e))})};er.appendChild(b5)}
 extras(d,b,er);b.appendChild(bt);if(temC&&!cfg.nome)b.appendChild(el("div","chint","Dica: coloque seu nome em ☰ Menu > Assinatura para a assinatura sair certa na versão completa."));if(er.childNodes.length){b.appendChild(el("div","lb",d.mine?"Opções deste script":"Alterar este script (vale para todos)"));b.appendChild(er)}
-var hs=(!d.mine&&Array.isArray(d.hist))?d.hist.filter(function(h){return h&&typeof h.tx==="string"}):[];
+var hs=(!d.mine&&isAprov()&&Array.isArray(d.hist))?d.hist.filter(function(h){return h&&typeof h.tx==="string"}):[];
 if(hs.length){var hv=el("details","hist");hv.appendChild(el("summary","","🕘 Versões anteriores ("+hs.length+")"));
 hs.forEach(function(h){var it=el("div","hit");it.appendChild(el("div","edby",h.at?"Versão"+(h.by?" de "+S(h.by):"")+" em "+dt(h.at):"Texto original"));
 if(typeof h.t==="string"&&h.t!==d.t)it.appendChild(el("div","","Título: "+h.t));it.appendChild(el("div","tx sm",h.tx));
